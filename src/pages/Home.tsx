@@ -6,8 +6,8 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Landmark, CreditCard, GraduationCap, Plane, Activity, ArrowRight, Layers } from 'lucide-react';
-import { motion } from 'motion/react';
+import { TrendingUp, Landmark, CreditCard, GraduationCap, Plane, Activity, ArrowRight, Layers, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { stripHtml } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -19,6 +19,7 @@ const CATEGORIES = [
 ];
 
 export default function Home() {
+  console.log("Home Page Rendering...");
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [loanPosts, setLoanPosts] = useState<any[]>([]);
   const [scholarshipPosts, setScholarshipPosts] = useState<any[]>([]);
@@ -33,29 +34,41 @@ export default function Home() {
           orderBy('publishDate', 'desc'),
           limit(6)
         );
-        const latestSnapshot = await getDocs(latestQ);
-        const latest = latestSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setLatestPosts(latest);
-
+        
         const loansQ = query(
           collection(db, 'posts'),
           where('status', '==', 'published'),
-          where('category', '==', 'Loans'),
+          where('category', 'in', ['Loans', 'Personal Loans', 'loans']),
           orderBy('publishDate', 'desc'),
           limit(4)
         );
-        const loansSnapshot = await getDocs(loansQ);
-        setLoanPosts(loansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
         const scholarshipQ = query(
           collection(db, 'posts'),
           where('status', '==', 'published'),
-          where('category', '==', 'Scholarships'),
+          where('category', 'in', ['Scholarships', 'scholarships', 'Education']),
           orderBy('publishDate', 'desc'),
           limit(3)
         );
-        const scholarshipSnapshot = await getDocs(scholarshipQ);
-        setScholarshipPosts(scholarshipSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+        const [latestSnapshot, loansSnapshot, scholarshipSnapshot] = await Promise.allSettled([
+          getDocs(latestQ),
+          getDocs(loansQ),
+          getDocs(scholarshipQ)
+        ]);
+
+        if (latestSnapshot.status === 'fulfilled') {
+          const latest = latestSnapshot.value.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setLatestPosts(latest);
+        }
+
+        if (loansSnapshot.status === 'fulfilled') {
+          setLoanPosts(loansSnapshot.value.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        }
+
+        if (scholarshipSnapshot.status === 'fulfilled') {
+          setScholarshipPosts(scholarshipSnapshot.value.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        }
 
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -69,223 +82,232 @@ export default function Home() {
   const topStory = latestPosts[0];
   const sideStories = latestPosts.slice(1, 4);
 
+  const formatDate = (date: any) => {
+    if (!date) return '';
+    try {
+      const d = date.toDate ? date.toDate() : new Date(date);
+      return d.toLocaleDateString();
+    } catch (e) {
+      return '';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-10">
+        <div className="w-16 h-16 border-t-2 border-primary animate-spin mb-8"></div>
+        <h1 className="text-2xl font-nameplate text-primary animate-pulse">THE LEGAL DAILY</h1>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-4 italic">Synchronizing Global Intelligence...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Navbar />
       
-      <main className="max-w-7xl mx-auto pt-32 px-4 sm:px-6 lg:px-8 pb-20">
-        {/* Header Bar */}
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row items-center justify-between mb-12 border-b border-primary/20 pb-6"
-        >
-          <div className="flex items-center gap-4 mb-4 md:mb-0">
-            <Badge variant="outline" className="border-primary text-primary font-bold text-[10px] uppercase tracking-[0.2em] px-3 py-1 bg-primary/5">
-              Legal & Financial Intelligence
-            </Badge>
-            <div className="h-4 w-px bg-primary/20 hidden md:block"></div>
-            <span className="text-[10px] uppercase tracking-widest font-black text-secondary/60">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
+      <main className="max-w-7xl mx-auto pt-10 px-4 sm:px-6 lg:px-8 pb-20">
+        {/* Newspaper Top Info Bar */}
+        <div className="border-y-2 border-primary py-2 mb-10 flex flex-col md:flex-row items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] italic">
+          <div className="flex items-center gap-6 mb-2 md:mb-0">
+            <span>Special Report</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+            <span>Vol. LXIV — No. 312</span>
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-secondary text-background flex items-center justify-center text-[10px] font-bold">
-                  {String.fromCharCode(64 + i)}
-                </div>
-              ))}
-            </div>
-            <span className="text-[10px] font-bold text-secondary/40 uppercase tracking-tighter">
-              +12K Active Readers
-            </span>
+            <span>Global Finance & Jurisprudence</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+            <span className="text-primary tracking-[0.4em]">USA & CANADA EDITION</span>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Hero Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-24">
-          {loading ? (
-            <div className="lg:col-span-8 h-[600px] bg-secondary/5 animate-pulse rounded-3xl"></div>
-          ) : topStory ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1 }}
-              className="lg:col-span-8 group relative"
-            >
-              <Link to={`/blog/${topStory.slug}`} className="block relative overflow-hidden rounded-[2.5rem] luxury-shadow mb-8">
-                <div className="aspect-[21/11] relative overflow-hidden">
-                  <img 
-                    src={topStory.thumbnail || `https://picsum.photos/seed/${topStory.id}/1200/600`} 
-                    alt={topStory.title} 
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
-                  <div className="absolute bottom-10 left-10 right-10">
-                    <Badge className="bg-primary text-secondary mb-4 font-black uppercase tracking-widest text-[10px] px-4 py-1.5 rounded-full border-none">
-                      Editorial Choice
-                    </Badge>
-                    <h1 className="text-4xl md:text-6xl text-white font-heading leading-[1] mb-4 drop-shadow-lg">
+        {/* Hero Section - Multi-column Layout */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-primary/20 mb-16 pb-16">
+          {/* Main Headline Column */}
+          <div className="lg:col-span-8 lg:pr-10 lg:border-r border-primary/20">
+            {topStory ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="group cursor-pointer"
+              >
+                <Link to={`/blog/${topStory.slug}`} className="block">
+                  <div className="aspect-[21/11] mb-6 overflow-hidden bg-muted">
+                    <img 
+                      src={topStory.thumbnail || `https://picsum.photos/seed/${topStory.id}/1200/600`} 
+                      alt={topStory.title} 
+                      className="w-full h-full object-cover grayscale-[0.5] hover:grayscale-0 transition-all duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="px-2 py-0.5 bg-primary text-background text-[9px] font-black uppercase tracking-widest">{topStory.category}</span>
+                      <span className="text-[10px] font-bold text-muted-foreground italic">{formatDate(topStory.publishDate || topStory.createdAt)}</span>
+                    </div>
+                    <h2 className="text-4xl md:text-6xl lg:text-7xl font-heading leading-[0.95] text-primary group-hover:underline underline-offset-8 transition-all decoration-1">
                       {topStory.title}
-                    </h1>
-                    <div className="flex items-center gap-4 text-white/80 text-[10px] font-bold uppercase tracking-widest">
-                      <span>{topStory.category}</span>
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span>{Math.ceil(stripHtml(topStory.content).length / 200)} min read</span>
+                    </h2>
+                    <p className="text-lg md:text-xl font-serif text-foreground/80 leading-relaxed max-w-3xl drop-cap">
+                      {stripHtml(topStory.metaDescription || topStory.content?.substring(0, 300) || '')}...
+                    </p>
+                    <div className="pt-4 flex items-center gap-4 border-t border-primary/10">
+                       <span className="text-[10px] font-black uppercase tracking-widest italic">By {topStory.authorName || 'E-Legal Staff'}</span>
+                       <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-2 transition-transform" />
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ) : null}
+                </Link>
+              </motion.div>
+            ) : (
+              <div className="py-20 text-center border-2 border-dashed border-primary/10">
+                 <h2 className="text-4xl font-nameplate text-primary/20">The Daily Record</h2>
+                 <p className="text-sm font-serif italic text-muted-foreground mt-4">Waiting for latest intelligence dispatches...</p>
+              </div>
+            )}
+          </div>
 
-          <div className="lg:col-span-4 space-y-10">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-primary mb-4 pb-2 border-b border-primary/10">Briefings</h3>
-            <div className="space-y-8">
-              {loading ? Array(3).fill(0).map((_, i) => <div key={i} className="h-24 bg-secondary/5 animate-pulse rounded-2xl" />) : 
-               sideStories.map((post, idx) => (
+          {/* Right Sidebar - Breaking Stories */}
+          <div className="lg:col-span-4 lg:pl-10 mt-12 lg:mt-0">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-primary mb-6 pb-2 border-b-2 border-primary">Featured Briefings</h3>
+            <div className="space-y-8 divide-y divide-primary/10">
+              {sideStories.length > 0 ? sideStories.map((post, idx) => (
                 <motion.div 
                   key={post.id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + (idx * 0.1) }}
+                  transition={{ delay: idx * 0.1 }}
+                  className={idx > 0 ? 'pt-8' : ''}
                 >
                   <Link to={`/blog/${post.slug}`} className="group block space-y-3">
-                    <div className="flex items-center gap-3 text-primary text-[9px] font-black uppercase tracking-widest">
-                      <span>{post.category}</span>
-                      <ArrowRight className="w-2.5 h-2.5 transition-transform group-hover:translate-x-1" />
+                    <div className="text-primary text-[9px] font-black uppercase tracking-widest italic">
+                      {post.category}
                     </div>
-                    <h4 className="text-2xl font-heading text-secondary group-hover:text-primary transition-colors leading-[1.2]">
+                    <h4 className="text-2xl font-heading text-primary group-hover:underline decoration-1 transition-all leading-tight">
                       {post.title}
                     </h4>
-                    <p className="text-xs text-secondary/60 line-clamp-2 leading-relaxed">
-                      {stripHtml(post.metaDescription)}
+                    <p className="text-xs font-serif text-muted-foreground line-clamp-2 leading-relaxed">
+                      {stripHtml(post.metaDescription || post.content?.substring(0, 150) || '')}
                     </p>
                   </Link>
                 </motion.div>
-              ))}
+              )) : (
+                <div className="py-10 text-muted-foreground/30 text-[10px] font-black uppercase tracking-widest">No recent briefings</div>
+              )}
             </div>
             
-            <div className="p-8 bg-secondary rounded-[2rem] text-background relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Layers className="w-20 h-20" />
-              </div>
-              <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">Strategic Vault</h5>
-              <p className="text-lg font-heading leading-tight mb-6">Gain access to professional-grade financial frameworks.</p>
-              <Button className="w-full bg-primary text-secondary hover:bg-primary/90 font-black uppercase text-[10px] tracking-widest rounded-full py-6 border-none">
-                Premium Membership
+            <div className="mt-12 p-8 border-4 border-double border-primary bg-background text-primary">
+              <h5 className="text-[11px] font-black uppercase tracking-[0.2em] mb-4 text-center">Dispatch Advisory</h5>
+              <p className="text-base font-serif italic text-center leading-tight mb-6">"Reliable intelligence remains the most effective form of capital in today's global landscape."</p>
+              <Button className="w-full bg-primary text-background hover:bg-primary/90 font-black uppercase text-[10px] tracking-widest rounded-none h-12">
+                Join the Network
               </Button>
             </div>
           </div>
         </section>
 
         {/* Global Market Intelligence Grid */}
-        <section className="mb-32">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-4 block text-left">Asset Categories</span>
-              <h2 className="text-4xl md:text-5xl font-heading text-secondary text-left">Wealth Management</h2>
-            </div>
-            <Link to="/blog" className="text-[10px] font-black text-secondary/40 hover:text-primary uppercase tracking-widest pb-2 border-b border-secondary/10 transition-colors">
-              Explore All Verticals
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {CATEGORIES.map((cat, idx) => (
-              <motion.div 
-                key={cat.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="group cursor-pointer"
-              >
-                <Link to={`/category/${cat.slug}`} className="block h-full">
-                  <div className="h-full p-8 bg-white border border-primary/5 rounded-[2rem] text-center transition-all duration-500 hover:bg-secondary hover:text-background luxury-shadow">
-                    <div className={`w-12 h-12 ${cat.color} rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:bg-primary group-hover:text-secondary`}>
-                      <cat.icon className="w-6 h-6" />
-                    </div>
-                    <h4 className="text-sm font-black uppercase tracking-widest mb-2">{cat.name}</h4>
-                    <p className="text-[9px] font-bold opacity-40 uppercase tracking-tighter">Premium Guides</p>
+        <section className="mb-24 px-4 py-10 bg-muted/30 border-y border-primary/20">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-[10px] font-black text-center text-primary uppercase tracking-[0.5em] mb-10">Strategic Verticals</h2>
+            <div className="flex flex-wrap justify-center items-center gap-12">
+              {CATEGORIES.map((cat) => (
+                <Link 
+                  key={cat.name} 
+                  to={`/category/${cat.slug}`} 
+                  className="flex flex-col items-center gap-4 group"
+                >
+                  <div className="w-12 h-12 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <cat.icon className="w-6 h-6 stroke-1" />
                   </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest">{cat.name}</span>
                 </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Featured Verticals */}
-        <section className="space-y-32">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            <div className="lg:col-span-4 lg:sticky lg:top-32 text-left">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-6 block">Section 01</span>
-              <h2 className="text-5xl font-heading text-secondary mb-6 leading-tight">Mastering<br/>Modern Debt</h2>
-              <p className="text-secondary/60 text-sm leading-relaxed mb-8">
-                In-depth analysis of global loan structures and principal protection strategies for institutional and private success.
-              </p>
-              <Button variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 text-xs font-bold uppercase tracking-widest px-8 h-10">
-                Strategic Archives
-              </Button>
-            </div>
-            
-            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-              {loading ? Array(4).fill(0).map((_, i) => <div key={i} className="h-80 bg-secondary/5 animate-pulse rounded-3xl" />) : 
-               loanPosts.map((post, idx) => (
-                <div key={post.id} className={`space-y-6 ${idx % 2 === 1 ? 'md:mt-12' : ''}`}>
-                  <Link to={`/blog/${post.slug}`} className="block group">
-                    <div className="aspect-[16/10] rounded-3xl overflow-hidden mb-6 luxury-shadow">
-                      <img 
-                        src={post.thumbnail || `https://picsum.photos/seed/${post.id}/600/400`} 
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                      />
-                    </div>
-                    <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mb-3 block text-left">Analytical Report</span>
-                    <h4 className="text-2xl font-heading text-secondary group-hover:text-primary transition-colors leading-[1.2] text-left">
-                      {post.title}
-                    </h4>
-                  </Link>
-                </div>
               ))}
             </div>
           </div>
-
-          <section className="bg-secondary rounded-[4rem] p-12 lg:p-24 text-background relative overflow-hidden text-left">
-            <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-primary/20 blur-[150px] rounded-full"></div>
-            
-            <div className="max-w-4xl space-y-16">
-              <div className="space-y-6">
-                <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] block">Section 02</span>
-                <h2 className="text-5xl lg:text-7xl font-heading leading-none">Global Talent <br/><span className="text-primary italic">Incentives</span></h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                {loading ? Array(3).fill(0).map((_, i) => <div key={i} className="h-40 bg-white/5 animate-pulse rounded-2xl" />) : 
-                 scholarshipPosts.map((post) => (
-                  <Link key={post.id} to={`/blog/${post.slug}`} className="space-y-6 group">
-                    <div className="h-px bg-white/10 w-full group-hover:bg-primary/40 transition-colors"></div>
-                    <h4 className="text-2xl font-heading leading-tight group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h4>
-                    <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-2">
-                      <TrendingUp className="w-3 h-3 text-primary" />
-                      <span>Level: High</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
         </section>
 
+        {/* Multi-Column Content Areas */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* Section 01 - Loans */}
+          <div className="lg:col-span-8">
+             <div className="flex items-baseline justify-between mb-8 border-b-2 border-primary pb-2">
+                <h2 className="text-3xl font-nameplate uppercase tracking-tight text-primary">Capital Markets</h2>
+                <Link to="/category/loans" className="text-[9px] font-black uppercase tracking-widest hover:underline">View Section Archives</Link>
+             </div>
+             
+             <div className="news-columns space-y-12 md:space-y-0">
+               {loanPosts.length > 0 ? loanPosts.map((post) => (
+                  <article key={post.id} className="mb-12 break-inside-avoid">
+                    <Link to={`/blog/${post.slug}`} className="group block">
+                      <div className="aspect-[16/9] mb-4 overflow-hidden border border-primary/5 bg-muted">
+                        <img 
+                          src={post.thumbnail || `https://picsum.photos/seed/${post.id}/600/400`} 
+                          alt={post.title}
+                          className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-500"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <h4 className="text-xl font-heading text-primary group-hover:underline leading-tight mb-2">
+                        {post.title}
+                      </h4>
+                      <p className="text-[13px] font-serif leading-relaxed text-muted-foreground line-clamp-3">
+                        {stripHtml(post.metaDescription || post.content?.substring(0, 200) || '')}
+                      </p>
+                      <div className="mt-3 text-[9px] font-black uppercase tracking-tighter text-primary/40 italic">
+                        By Staff Writer — {formatDate(post.publishDate || post.createdAt)}
+                      </div>
+                    </Link>
+                  </article>
+                )) : (
+                  <div className="col-span-full py-10 text-muted-foreground/30 text-[10px] font-black uppercase tracking-widest text-center italic">Archive updates pending selection.</div>
+                )}
+             </div>
+          </div>
+
+          {/* Section 02 Sidebar - Scholar & Travel */}
+          <div className="lg:col-span-4">
+             <div className="mb-12">
+               <div className="flex items-baseline justify-between mb-6 border-b-2 border-primary pb-2">
+                 <h2 className="text-xl font-nameplate uppercase text-primary">Incentives</h2>
+                 <User className="w-4 h-4" />
+               </div>
+               <div className="space-y-6">
+                 {loading ? Array(3).fill(0).map((_, i) => <div key={i} className="h-20 bg-muted animate-pulse" />) : 
+                  scholarshipPosts.map((post) => (
+                    <Link key={post.id} to={`/blog/${post.slug}`} className="group block py-4 border-b border-primary/10 last:border-0 first:pt-0">
+                      <h4 className="text-lg font-heading text-primary group-hover:italic transition-all leading-tight mb-2">
+                        {post.title}
+                      </h4>
+                      <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground italic">
+                        <TrendingUp className="w-2.5 h-2.5 text-primary" />
+                        <span>Insight Report</span>
+                      </div>
+                    </Link>
+                  ))}
+               </div>
+             </div>
+
+             <div className="p-8 bg-black text-white italic text-center">
+                <span className="text-[9px] font-black uppercase tracking-[0.5em] block mb-4">Classifieds</span>
+                <p className="text-sm font-serif leading-relaxed opacity-70">
+                   "Seeking expert council regarding cross-border assets? Join our elite inner circle for weekly bulletins."
+                </p>
+                <div className="mt-6 flex justify-center">
+                   <div className="px-4 py-2 border border-white/20 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all cursor-pointer">
+                      Inquire Monthly
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+
         {/* Global News Cloud */}
-        <section className="mt-32 pt-20 border-t border-primary/10">
-          <div className="flex flex-col md:flex-row items-baseline gap-12">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary whitespace-nowrap">Intelligence Stream</h3>
+        <section className="mt-24 pt-12 border-t-2 border-black">
+          <div className="flex flex-col md:flex-row items-baseline gap-10">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-primary whitespace-nowrap">Topic Registry</h3>
             <div className="flex flex-wrap gap-x-12 gap-y-6">
               {['MORTGAGES', 'FEDERAL AID', 'CREDIT APR', 'DEBT ARCHITECTURE', 'PRIVATE EQUITY', 'LIABILITY PROTECTION', 'LIQUIDITY', 'ESTATE LEGALITY'].map(tag => (
-                <Link key={tag} to={`/tag/${tag.toLowerCase()}`} className="text-xl md:text-2xl font-heading text-secondary/30 hover:text-secondary transition-colors uppercase tracking-widest">
+                <Link key={tag} to={`/tag/${tag.toLowerCase()}`} className="text-xl md:text-2xl font-heading text-primary/40 hover:text-primary transition-colors decoration-1 hover:underline">
                   {tag}
                 </Link>
               ))}

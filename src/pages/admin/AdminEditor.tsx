@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -553,8 +554,9 @@ export default function AdminEditor() {
       1. Meta Title: High impact, catchy, search-optimized (max 60 chars).
       2. Meta Description: Action-oriented summary (max 160 chars).
       3. Focus Keyword: The single most relevant keyword phrase for this content.
+      4. Meta Keywords: A comma-separated list of 5-8 relevant semantic SEO keywords.
 
-      Respond only with JSON containing 'metaTitle', 'metaDescription', and 'focusKeyword' fields.`;
+      Respond only with JSON containing 'metaTitle', 'metaDescription', 'focusKeyword', and 'metaKeywords' fields.`;
 
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -563,11 +565,12 @@ export default function AdminEditor() {
           responseMimeType: "application/json",
           responseSchema: {
             type: GenAIType.OBJECT,
-            required: ["metaTitle", "metaDescription", "focusKeyword"],
+            required: ["metaTitle", "metaDescription", "focusKeyword", "metaKeywords"],
             properties: {
               metaTitle: { type: GenAIType.STRING },
               metaDescription: { type: GenAIType.STRING },
-              focusKeyword: { type: GenAIType.STRING }
+              focusKeyword: { type: GenAIType.STRING },
+              metaKeywords: { type: GenAIType.STRING }
             }
           }
         }
@@ -578,7 +581,8 @@ export default function AdminEditor() {
         ...post, 
         metaTitle: result.metaTitle,
         metaDescription: result.metaDescription,
-        focusKeyword: result.focusKeyword
+        focusKeyword: result.focusKeyword,
+        metaKeywords: result.metaKeywords
       });
       toast.success("SEO Metadata optimized by AI!");
     } catch (error: any) {
@@ -639,158 +643,168 @@ export default function AdminEditor() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <Button variant="ghost" onClick={() => navigate('/admin/posts')} className="w-fit text-slate-500 hover:text-slate-900">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={generateFullPostWithAI} disabled={loading || generating} className="text-[10px] font-black uppercase tracking-widest text-emerald-600 border-emerald-100 hover:bg-emerald-50 h-9">
-              {generating ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5 mr-1.5" />}
-              AI Write
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      {/* Top Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-primary/10 transition-colors">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/admin/posts')} 
+            className="w-12 h-12 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-500 hover:text-indigo-600 transition-all group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          </Button>
+          <div className="flex flex-col">
+             <Badge className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-none px-4 py-1.5 rounded-full uppercase text-[9px] font-black tracking-widest mb-2 block w-fit">
+               Content Architecture
+             </Badge>
+             <h1 className="text-2xl font-heading text-secondary dark:text-white leading-tight uppercase tracking-tight">
+               {id ? 'Refine Strategy Asset' : 'Engineer New Dispatch'}
+             </h1>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+            <Button variant="outline" size="sm" onClick={generateFullPostWithAI} disabled={loading || generating} className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 border-emerald-100 dark:border-emerald-900/40 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 h-12 rounded-xl px-6">
+              {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
+              AI Constructor
             </Button>
-            <Button variant="outline" size="sm" onClick={handleHumanize} disabled={loading || humanizing || generating} className="text-[10px] font-black uppercase tracking-widest text-purple-600 border-purple-100 hover:bg-purple-50 h-9">
-              {humanizing ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
-              Humanize
+            <Button variant="outline" size="sm" onClick={handleHumanize} disabled={loading || humanizing || generating} className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600 border-purple-100 dark:border-purple-900/40 hover:bg-purple-50 dark:hover:bg-purple-900/10 h-12 rounded-xl px-6">
+              {humanizing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+              Naturalize
             </Button>
-            <Button size="sm" onClick={handleSave} disabled={loading || generating} className="bg-indigo-600 hover:bg-indigo-700 text-[10px] font-black uppercase tracking-widest h-9 px-6 ml-auto sm:ml-0">
-              <Save className="w-3.5 h-3.5 mr-1.5" /> {id ? 'Update' : 'Publish'}
+            <Button size="sm" onClick={handleSave} disabled={loading || generating} className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-[0.3em] h-12 px-10 rounded-xl shadow-xl shadow-indigo-100 dark:shadow-none ml-auto sm:ml-0">
+              <Save className="w-4 h-4 mr-2" /> {id ? 'Commit Update' : 'Initialize Asset'}
             </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border-none shadow-sm overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="border border-primary/5 shadow-none overflow-hidden bg-white dark:bg-slate-950 rounded-[3rem] transition-all duration-500">
             <CardContent className="p-0">
-               <div className="p-6 pb-0 space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Article Title</Label>
+               <div className="p-10 pb-0 space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                      <Type className="w-3 h-3" /> Core Asset Title
+                    </Label>
                     <Input 
                       value={post.title || ""} 
                       onChange={e => setPost({...post, title: e.target.value})} 
-                      placeholder="Mastering Legal Frameworks..."
-                      className="text-xl font-black tracking-tight h-14 bg-slate-50/50 border-slate-100 italic"
+                      placeholder="Mastering Legal Frameworks & Strategic Advantage..."
+                      className="text-2xl font-heading font-black tracking-tight h-16 bg-muted/20 border-primary/5 rounded-2xl italic px-6 focus:ring-indigo-600"
                     />
                   </div>
                </div>
 
-               <div className={`border-t border-slate-100 ${viewMode === 'split' ? 'md:h-[85vh] h-[750px]' : 'mt-4'}`}>
-                 <div className="px-6 border-b border-slate-100 flex flex-wrap items-center justify-between bg-slate-50/50 py-2 md:py-0">
-                    <div className="flex items-center h-12 gap-1 overflow-x-auto lg:overflow-visible no-scrollbar">
+               <div className={`mt-8 border-t border-primary/5 ${viewMode === 'split' ? 'md:h-[85vh] h-[750px]' : ''}`}>
+                 <div className="px-10 border-b border-primary/5 flex flex-wrap items-center justify-between bg-slate-50/50 dark:bg-slate-900/50 h-14">
+                    <div className="flex items-center h-full gap-2">
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => setViewMode('edit')}
-                        className={`text-[10px] uppercase font-black tracking-widest rounded-none h-full border-b-2 transition-all px-4 shrink-0 ${viewMode === 'edit' ? 'border-indigo-600 text-indigo-600 bg-white' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                        className={`text-[9px] uppercase font-black tracking-[0.2em] rounded-none h-full border-b-2 transition-all px-6 ${viewMode === 'edit' ? 'border-indigo-600 text-indigo-600 bg-white dark:bg-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                       >
-                        Editor
+                        Source Editor
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => setViewMode('preview')}
-                        className={`text-[10px] uppercase font-black tracking-widest rounded-none h-full border-b-2 transition-all px-4 shrink-0 ${viewMode === 'preview' ? 'border-indigo-600 text-indigo-600 bg-white' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                        className={`text-[9px] uppercase font-black tracking-[0.2em] rounded-none h-full border-b-2 transition-all px-6 ${viewMode === 'preview' ? 'border-indigo-600 text-indigo-600 bg-white dark:bg-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                       >
-                        Preview
+                        Visual Preview
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => setViewMode('split')}
-                        className={`hidden md:flex text-[10px] uppercase font-black tracking-widest rounded-none h-full border-b-2 transition-all px-4 shrink-0 ${viewMode === 'split' ? 'border-indigo-600 text-indigo-600 bg-white' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                        className={`hidden md:flex text-[9px] uppercase font-black tracking-[0.2em] rounded-none h-full border-b-2 transition-all px-6 ${viewMode === 'split' ? 'border-indigo-600 text-indigo-600 bg-white dark:bg-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                       >
-                        Split View
+                        Duo Matrix
                       </Button>
                     </div>
-                    <div className="flex items-center gap-2 pb-2 md:pb-0">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-white/50 border border-slate-100 px-2 py-0.5 rounded cursor-help" title="Markdown + HTML Enabled">Advanced Editor</span>
+                    <div className="hidden lg:flex items-center gap-3">
+                       <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-slate-800 rounded-full border border-primary/5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-600"></div>
+                          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Marked Logic Engaged</span>
+                       </div>
                     </div>
                  </div>
 
                  {/* Proper Formatting Toolbar */}
-                 <div className="px-6 py-2 border-b border-slate-100 bg-white flex flex-wrap items-center gap-1 overflow-x-auto no-scrollbar shadow-sm sticky top-0 z-10">
+                 <div className="px-10 py-3 border-b border-primary/5 bg-white dark:bg-slate-950 flex flex-wrap items-center gap-2 overflow-x-auto no-scrollbar shadow-sm sticky top-0 z-10 transition-colors">
                    {/* Basic Formatting */}
-                   <div className="flex items-center gap-0.5 border-r border-slate-100 pr-2 mr-2 shrink-0">
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('**', '**')} className="h-8 w-8 text-slate-600"><Bold className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('*', '*')} className="h-8 w-8 text-slate-600"><Italic className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('> ')} className="h-8 w-8 text-slate-600"><Quote className="w-4 h-4" /></Button>
+                   <div className="flex items-center gap-1 border-r border-primary/5 pr-4 mr-2 shrink-0">
+                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('**', '**')} className="h-10 w-10 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all"><Bold className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('*', '*')} className="h-10 w-10 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all"><Italic className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('> ')} className="h-10 w-10 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all"><Quote className="w-4 h-4" /></Button>
                    </div>
 
                    {/* Headings */}
-                   <div className="flex items-center gap-0.5 border-r border-slate-100 pr-2 mr-2 shrink-0">
-                      <Button variant="ghost" size="sm" disabled={viewMode === 'preview'} onClick={() => insertFormat('## ')} className="h-8 px-2 text-slate-600 text-[10px] font-black tracking-tighter uppercase"><Heading2 className="w-4 h-4 mr-1" /> H2</Button>
-                      <Button variant="ghost" size="sm" disabled={viewMode === 'preview'} onClick={() => insertFormat('### ')} className="h-8 px-2 text-slate-600 text-[10px] font-black tracking-tighter uppercase"><Heading3 className="w-4 h-4 mr-1" /> H3</Button>
+                   <div className="flex items-center gap-1 border-r border-primary/5 pr-4 mr-2 shrink-0">
+                      <Button variant="ghost" size="sm" disabled={viewMode === 'preview'} onClick={() => insertFormat('## ')} className="h-10 px-4 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all text-[10px] font-black tracking-widest uppercase"><Heading2 className="w-4 h-4 mr-2" /> Heading 2</Button>
+                      <Button variant="ghost" size="sm" disabled={viewMode === 'preview'} onClick={() => insertFormat('### ')} className="h-10 px-4 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all text-[10px] font-black tracking-widest uppercase"><Heading3 className="w-4 h-4 mr-2" /> Heading 3</Button>
                    </div>
 
                    {/* Lists */}
-                   <div className="flex items-center gap-0.5 border-r border-slate-100 pr-2 mr-2 shrink-0">
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('- ')} className="h-8 w-8 text-slate-600"><List className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('1. ')} className="h-8 w-8 text-slate-600"><ListOrdered className="w-4 h-4" /></Button>
+                   <div className="flex items-center gap-1 border-r border-primary/5 pr-4 mr-2 shrink-0">
+                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('- ')} className="h-10 w-10 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all"><List className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('1. ')} className="h-10 w-10 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all"><ListOrdered className="w-4 h-4" /></Button>
                    </div>
 
-                   {/* Alignment */}
-                   <div className="flex items-center gap-0.5 border-r border-slate-100 pr-2 mr-2 shrink-0">
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('<div style="text-align: left">\n', '\n</div>')} className="h-8 w-8 text-slate-600"><AlignLeft className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('<div style="text-align: center">\n', '\n</div>')} className="h-8 w-8 text-slate-600"><AlignCenter className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" disabled={viewMode === 'preview'} onClick={() => insertFormat('<div style="text-align: right">\n', '\n</div>')} className="h-8 w-8 text-slate-600"><AlignRight className="w-4 h-4" /></Button>
-                   </div>
+                   {/* Size & Palette */}
+                   <div className="flex items-center gap-1">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger disabled={viewMode === 'preview'} className="h-10 w-10 text-slate-500 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all outline-none disabled:opacity-30">
+                          <Palette className="w-4 h-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-primary/5 p-2">
+                          {[
+                            { name: 'Corporate Indigo', hex: '#4f46e5' },
+                            { name: 'Legal Crimson', hex: '#dc2626' },
+                            { name: 'Advisory Blue', hex: '#2563eb' },
+                            { name: 'System Emerald', hex: '#16a34a' },
+                            { name: 'Strategic Amber', hex: '#d97706' },
+                            { name: 'Neutral Slate', hex: '#475569' },
+                          ].map((color) => (
+                            <DropdownMenuItem key={color.name} onClick={() => insertFormat(`<span style="color: ${color.hex}">`, '</span>')} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest cursor-pointer rounded-xl p-3">
+                              <div className="w-4 h-4 rounded-full border border-black/5" style={{ backgroundColor: color.hex }} /> {color.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
 
-                   {/* Color Picker */}
-                   <div className="flex items-center gap-0.5 border-r border-slate-100 pr-2 mr-2">
-                     <DropdownMenu>
-                       <DropdownMenuTrigger disabled={viewMode === 'preview'} className="h-8 w-8 text-slate-600 flex items-center justify-center hover:bg-slate-100 rounded-md transition-colors outline-none focus:ring-1 focus:ring-slate-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                         <Palette className="w-4 h-4" />
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="start" className="w-32 bg-white rounded-xl shadow-xl border-slate-100">
-                         {[
-                           { name: 'Red', hex: '#dc2626' },
-                           { name: 'Blue', hex: '#2563eb' },
-                           { name: 'Green', hex: '#16a34a' },
-                           { name: 'Indigo', hex: '#4f46e5' },
-                           { name: 'Amber', hex: '#d97706' },
-                           { name: 'Slate', hex: '#475569' },
-                         ].map((color) => (
-                           <DropdownMenuItem key={color.name} onClick={() => insertFormat(`<span style="color: ${color.hex}">`, '</span>')} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer">
-                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color.hex }} /> {color.name}
-                           </DropdownMenuItem>
-                         ))}
-                       </DropdownMenuContent>
-                     </DropdownMenu>
-                   </div>
-
-                   {/* Size Picker */}
-                   <div className="flex items-center gap-0.5">
-                     <DropdownMenu>
-                       <DropdownMenuTrigger disabled={viewMode === 'preview'} className="h-8 w-8 text-slate-600 flex items-center justify-center hover:bg-slate-100 rounded-md transition-colors outline-none focus:ring-1 focus:ring-slate-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                         <Type className="w-4 h-4" />
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="start" className="w-32 bg-white rounded-xl shadow-xl border-slate-100">
-                         {[
-                           { label: 'Small', val: '12px' },
-                           { label: 'Medium', val: '18px' },
-                           { label: 'Large', val: '24px' },
-                           { label: 'Extra Large', val: '32px' },
-                           { label: 'Giga', val: '48px' },
-                         ].map((size) => (
-                           <DropdownMenuItem key={size.label} onClick={() => insertFormat(`<span style="font-size: ${size.val}; line-height: 1.2; display: inline-block;">`, '</span>')} className="text-[10px] font-bold uppercase tracking-widest cursor-pointer">
-                             {size.label} ({size.val})
-                           </DropdownMenuItem>
-                         ))}
-                       </DropdownMenuContent>
-                     </DropdownMenu>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger disabled={viewMode === 'preview'} className="h-10 w-10 text-slate-500 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all outline-none disabled:opacity-30">
+                          <Type className="w-4 h-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-primary/5 p-2">
+                          {[
+                            { label: 'Minor Detail', val: '12px' },
+                            { label: 'Standard Protocol', val: '18px' },
+                            { label: 'Segment Callout', val: '24px' },
+                            { label: 'Header Emphasis', val: '32px' },
+                            { label: 'Core Command', val: '48px' },
+                          ].map((size) => (
+                            <DropdownMenuItem key={size.label} onClick={() => insertFormat(`<span style="font-size: ${size.val}; line-height: 1.2; display: inline-block;">`, '</span>')} className="text-[10px] font-black uppercase tracking-widest cursor-pointer rounded-xl p-3">
+                              <span className="line-clamp-1">{size.label}</span> <span className="ml-auto opacity-40 font-mono italic">{size.val}</span>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                    </div>
                  </div>
                  
-                 <div className={`grid h-full ${viewMode === 'split' ? 'grid-cols-2 divide-x divide-slate-100 overflow-hidden' : 'grid-cols-1'}`}>
+                 <div className={`grid h-full ${viewMode === 'split' ? 'grid-cols-2 divide-x divide-primary/5 overflow-hidden' : 'grid-cols-1'}`}>
                     {(viewMode === 'edit' || viewMode === 'split') && (
-                      <div className={`m-0 p-6 bg-white shrink-0 ${viewMode === 'split' ? 'h-full overflow-y-auto' : 'min-h-[600px]'}`}>
+                      <div className={`m-0 p-10 bg-white dark:bg-slate-950 shrink-0 ${viewMode === 'split' ? 'h-full overflow-y-auto' : 'min-h-[700px]'}`}>
                         <Textarea 
                           ref={textareaRef}
                           value={post.content || ""} 
                           onChange={e => setPost({...post, content: e.target.value})} 
-                          className="min-h-full border-none focus-visible:ring-0 font-mono text-sm leading-relaxed p-0 resize-none shadow-none bg-transparent"
-                          placeholder="Write your institutional insights using Markdown..."
+                          className="min-h-full border-none focus-visible:ring-0 font-mono text-base leading-loose p-0 resize-none shadow-none bg-transparent dark:text-slate-300"
+                          placeholder="Construct your institutional insights using semantic Markdown logic..."
                         />
                       </div>
                     )}
@@ -811,54 +825,73 @@ export default function AdminEditor() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card className="border-none shadow-sm">
-            <CardHeader><CardTitle className="text-sm">Post Settings</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Slug</Label>
-                <Input value={post.slug || ""} onChange={e => setPost({...post, slug: e.target.value})} placeholder="url-friendly-slug" />
+        <div className="space-y-8 animate-in slide-in-from-right-4 duration-700">
+          <Card className="border border-primary/5 shadow-none bg-white dark:bg-slate-950 rounded-[2.5rem] overflow-hidden transition-all">
+            <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-primary/5 p-6">
+              <div className="flex items-center gap-3">
+                 <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-primary/5">
+                    <Gauge className="w-4 h-4 text-indigo-600" />
+                 </div>
+                 <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Asset Parameters</CardTitle>
               </div>
-              <div className="space-y-2">
-                <Label>Category</Label>
+            </CardHeader>
+            <CardContent className="space-y-6 p-8">
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Electronic Slug</Label>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs opacity-50">/</span>
+                  <Input 
+                    value={post.slug || ""} 
+                    onChange={e => setPost({...post, slug: e.target.value})} 
+                    placeholder="url-friendly-slug" 
+                    className="h-12 pl-8 border-primary/10 bg-muted/20 focus:ring-indigo-600 rounded-xl font-mono text-xs font-bold"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Deployment Logic</Label>
                 <Select value={post.category || ""} onValueChange={val => setPost({...post, category: val})}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Loans">Loans</SelectItem>
-                    <SelectItem value="Insurance">Insurance</SelectItem>
-                    <SelectItem value="Scholarships">Scholarships</SelectItem>
-                    <SelectItem value="Credit-Cards">Credit Cards</SelectItem>
-                    <SelectItem value="Travel">Travel</SelectItem>
+                  <SelectTrigger className="h-12 border-primary/5 bg-muted/20 rounded-xl text-xs font-bold font-heading uppercase tracking-widest px-4">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-primary/5 shadow-2xl">
+                    <SelectItem value="Loans" className="text-[10px] font-black uppercase tracking-widest p-4">Loans Protocol</SelectItem>
+                    <SelectItem value="Insurance" className="text-[10px] font-black uppercase tracking-widest p-4">Insurance Matrix</SelectItem>
+                    <SelectItem value="Scholarships" className="text-[10px] font-black uppercase tracking-widest p-4">Grant Intelligence</SelectItem>
+                    <SelectItem value="Credit-Cards" className="text-[10px] font-black uppercase tracking-widest p-4">Credit Analysis</SelectItem>
+                    <SelectItem value="Travel" className="text-[10px] font-black uppercase tracking-widest p-4">Global Mobility</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Operational State</Label>
                 <Select value={post.status || ""} onValueChange={val => setPost({...post, status: val})}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectTrigger className="h-12 border-primary/5 bg-muted/20 rounded-xl text-xs font-bold font-heading uppercase tracking-widest px-4">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-primary/5 shadow-2xl">
+                    <SelectItem value="draft" className="text-[10px] font-black uppercase tracking-widest p-4">Stasis (Draft)</SelectItem>
+                    <SelectItem value="published" className="text-[10px] font-black uppercase tracking-widest p-4">Active Deploy</SelectItem>
+                    <SelectItem value="scheduled" className="text-[10px] font-black uppercase tracking-widest p-4">Tactical Timer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
               {post.status === 'scheduled' && (
-                <div className="space-y-2 p-4 bg-blue-50 rounded-xl border border-blue-100 animate-in slide-in-from-top-2 duration-300">
-                  <Label className="text-primary font-bold">Schedule Publication</Label>
+                <div className="space-y-3 p-5 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 animate-in slide-in-from-top-4 duration-500">
+                  <div className="flex items-center gap-2 mb-2">
+                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></div>
+                     <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-600">Precision Timer Enabled</Label>
+                  </div>
                   <Input 
                     type="datetime-local" 
                     value={post.publishDate ? post.publishDate.substring(0, 16) : ''} 
                     onChange={e => setPost({...post, publishDate: new Date(e.target.value).toISOString()})}
-                    className="bg-white border-blue-200"
+                    className="h-12 bg-white dark:bg-slate-900 border-indigo-200 dark:border-indigo-900/20 rounded-xl text-xs font-black uppercase"
                   />
-                  <p className="text-[10px] text-primary/60 font-medium italic">Post will automatically go live at this time.</p>
+                  <p className="text-[8px] text-indigo-400 font-bold tracking-widest uppercase mt-2">Relational sync engaged for automated release.</p>
                 </div>
               )}
-              <div className="space-y-2">
-                <Label>Thumbnail URL</Label>
-                <Input value={post.thumbnail || ""} onChange={e => setPost({...post, thumbnail: e.target.value})} placeholder="https://..." />
-              </div>
             </CardContent>
           </Card>
 
@@ -880,155 +913,138 @@ export default function AdminEditor() {
             analyzingContext={analyzingContext}
           />
 
-          <Card className="border-none shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-400">Content Metadata</CardTitle>
+          <Card className="border border-primary/5 shadow-none bg-white dark:bg-slate-950 rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-primary/5 p-6 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-3">
+                 <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-primary/5 text-emerald-600">
+                    <BarChart3 className="w-4 h-4" />
+                 </div>
+                 <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Search Logic</CardTitle>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={generateSEOMetadata}
+                disabled={optimizingSEO || loading}
+                className="h-8 px-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 rounded-full text-[9px] font-black uppercase tracking-widest transition-all"
+              >
+                {optimizingSEO ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Sparkles className="w-3 h-3 mr-2" />}
+                Sync
+              </Button>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Focus Keyword</Label>
+            <CardContent className="space-y-6 p-8">
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Target Focus Vector</Label>
                 <div className="flex gap-2">
                   <Input 
                     value={post.focusKeyword || ""} 
                     onChange={e => setPost({...post, focusKeyword: e.target.value})} 
-                    placeholder="e.g. personal loan usa"
-                    className="h-10 bg-slate-50/50 border-slate-100 text-[11px] font-medium"
+                    placeholder="e.g. strategic loans 2024"
+                    className="h-12 border-primary/5 bg-muted/20 rounded-xl text-xs font-bold px-4"
                   />
                   <Button 
                     variant="outline" 
                     size="icon" 
                     onClick={handleGetSuggestions} 
                     disabled={suggesting}
-                    className="h-10 w-10 shrink-0 border-slate-100 text-indigo-600 hover:bg-indigo-50"
+                    className="h-12 w-12 shrink-0 border-primary/5 hover:border-indigo-600 text-indigo-600 bg-muted/20 hover:bg-indigo-50 rounded-xl transition-all shadow-sm"
                   >
-                    {suggesting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Lightbulb className="w-3 h-3" />}
+                    {suggesting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lightbulb className="w-4 h-4" />}
                   </Button>
                 </div>
 
                 {suggestions.length > 0 && (
-                  <div className="pt-2 animate-in slide-in-from-top-2 duration-300">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">AI Topic Ideas</span>
-                    <div className="flex flex-wrap gap-1.5">
+                  <div className="pt-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Tactical Expansions detected:</span>
+                    <div className="flex flex-wrap gap-2">
                       {suggestions.map((s, i) => (
                         <button 
                           key={i} 
-                          onClick={() => setPost({...post, content: post.content + `\n\n## Related Topic: ${s}\n`})}
-                          className="px-2 py-1 bg-white border border-slate-100 rounded-lg text-[9px] font-medium text-slate-600 hover:border-indigo-200 hover:text-indigo-600 transition-all flex items-center gap-1"
+                          onClick={() => setPost({...post, content: post.content + `\n\n## ${s}\n`})}
+                          className="px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-primary/5 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-600 hover:border-indigo-600 hover:text-indigo-600 transition-all flex items-center gap-2 group"
                         >
-                          <Plus className="w-2 h-2" /> {s}
+                          <Plus className="w-3 h-3 group-hover:rotate-90 transition-transform" /> {s}
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Meta Title</Label>
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Semantic Meta Title</Label>
                 <Input 
                   value={post.metaTitle || ""} 
                   onChange={e => setPost({...post, metaTitle: e.target.value})} 
-                  placeholder="SEO Optimized Title"
-                  className="h-10 bg-slate-50/50 border-slate-100 text-[11px] font-medium"
+                  placeholder="SEO Optimized Dispatch Title"
+                  className="h-12 border-primary/5 bg-muted/20 rounded-xl text-xs font-bold px-4"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Meta Description</Label>
-                <div className="flex items-center justify-between">
-                  <span className={`text-[9px] font-bold ${post.metaDescription?.length > 160 ? 'text-rose-500' : 'text-slate-400'}`}>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Abstract Intelligence (Meta)</Label>
+                  <span className={`text-[9px] font-black uppercase ${post.metaDescription?.length > 160 ? 'text-rose-500' : 'text-emerald-500'} bg-muted/50 px-2 py-0.5 rounded-full border border-primary/5 tracking-tighter`}>
                     {post.metaDescription?.length || 0} / 160
                   </span>
                 </div>
                 <Textarea 
                   value={post.metaDescription || ""} 
                   onChange={e => setPost({...post, metaDescription: e.target.value})} 
-                  placeholder="Brief summary for search results..."
-                  className={`min-h-20 bg-slate-50/50 border-slate-100 text-[11px] font-medium resize-none ${post.metaDescription?.length > 160 ? 'border-rose-200' : ''}`}
+                  placeholder="Summarize the strategic value of this asset for search crawlers..."
+                  className={`min-h-32 border-primary/5 bg-muted/20 rounded-2xl text-xs font-medium p-4 resize-none leading-relaxed italic ${post.metaDescription?.length > 160 ? 'border-rose-200' : ''}`}
                 />
-                <p className="text-[9px] text-slate-400 italic">Target: 155-160 characters for maximum search visibility.</p>
+                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-70 italic">Strategy: Aim for 155-160 characters for maximum CTR engagement.</p>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Meta Keywords</Label>
-                <Input 
-                  value={post.metaKeywords || ""} 
-                  onChange={e => setPost({...post, metaKeywords: e.target.value})} 
-                  placeholder="legal, finance, usa loans"
-                  className="h-10 bg-slate-50/50 border-slate-100 text-[11px] font-medium"
-                />
-              </div>
-
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Featured Image URL</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Visual Identification Asset</Label>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={async () => {
                       if (!post.title) {
-                        toast.error("Please add a title first to generate an image.");
+                        toast.error("Add a title first to generate visual identity.");
                         return;
                       }
                       setGenerating(true);
                       try {
                         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
-                        const prompt = `Suggest a professional, high-quality Unsplash image URL for a blog post about: "${post.title}". 
-                        Return only a valid Unsplash URL from their source API format like: https://images.unsplash.com/photo-[id]?q=80&w=1200&auto=format&fit=crop`;
-                        
-                        const response = await ai.models.generateContent({
-                          model: "gemini-3-flash-preview",
-                          contents: prompt
-                        });
-                        
-                        // Extract URL from response
+                        const prompt = `Suggest a professional, high-quality Unsplash image URL for a blog post about: "${post.title}". Return only the URL.`;
+                        const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: prompt });
                         const urlMatch = response.text.match(/https:\/\/images\.unsplash\.com\/photo-[^?\s"']+/);
                         if (urlMatch) {
                           setPost({ ...post, thumbnail: urlMatch[0] + "?q=80&w=1200&auto=format&fit=crop" });
-                          toast.success("AI Featured Image suggested!");
+                          toast.success("AI Visual Identity identified!");
                         } else {
-                          // Fallback to a nice legal/finance image
                           setPost({ ...post, thumbnail: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=1200&auto=format&fit=crop' });
-                          toast.info("Used a professional legal-themed fallback image.");
                         }
                       } catch (error: any) {
-                        console.error("Featured image failed", error);
-                        if (error.message?.includes('429') || error.message?.includes('quota')) {
-                          toast.error("🚀 AI Quota Exceeded! Using fallback image.");
-                          setPost({ ...post, thumbnail: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1200&auto=format&fit=crop' });
-                        } else {
-                          toast.error("Failed to generate image idea.");
-                        }
+                        toast.error("Visual generation logic failed.");
                       } finally {
                         setGenerating(false);
                       }
                     }}
                     disabled={generating}
-                    className="h-6 px-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 text-[9px] font-black uppercase tracking-widest"
+                    className="h-8 px-4 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-full text-[9px] font-black uppercase tracking-widest transition-all"
                   >
-                    {generating ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Sparkles className="w-3 h-3 mr-1" />}
-                    AI Suggest Image
+                    {generating ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Wand2 className="w-3 h-3 mr-2" />}
+                    Generate Axis
                   </Button>
                 </div>
                 <Input 
                   value={post.thumbnail || ""} 
                   onChange={e => setPost({...post, thumbnail: e.target.value})} 
-                  placeholder="https://images.unsplash.com/..."
-                  className="h-10 bg-slate-50/50 border-slate-100 text-[11px] font-medium"
+                  placeholder="https://..."
+                  className="h-12 border-primary/5 bg-muted/20 rounded-xl text-[10px] font-mono font-bold px-4 truncate"
                 />
                 {post.thumbnail && (
-                  <div className="aspect-video rounded-xl overflow-hidden border border-slate-100 mt-2">
-                    <img src={post.thumbnail} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <div className="aspect-[16/9] rounded-[2rem] overflow-hidden border-4 border-white dark:border-slate-900 shadow-2xl mt-4 relative group">
+                    <img src={post.thumbnail} alt="Preview" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                       <span className="text-[10px] font-black uppercase text-white tracking-[0.3em]">Active Visual Lock</span>
+                    </div>
                   </div>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tags (comma separated)</Label>
-                <Input 
-                  value={post.tags || ""} 
-                  onChange={e => setPost({...post, tags: e.target.value})} 
-                  placeholder="finance, legal, tips"
-                  className="h-10 bg-slate-50/50 border-slate-100 text-[11px] font-medium"
-                />
               </div>
             </CardContent>
           </Card>

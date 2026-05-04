@@ -28,41 +28,46 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminLogin from './pages/admin/AdminLogin';
 import AnalyticsTracker from './components/analytics/AnalyticsTracker';
 
-export default function App() {
-  return (
-    <HelmetProvider>
-      <TooltipProvider>
-        <Router>
-          <AnalyticsTracker />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/blog" element={<BlogListing />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/category/:category" element={<CategoryPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsConditions />} />
-            <Route path="/disclaimer" element={<Disclaimer />} />
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
-            <Route path="/faq" element={<FAQPage />} />
+import { ThemeProvider } from 'next-themes';
 
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="posts" element={<AdminPosts />} />
-              <Route path="posts/new" element={<AdminEditor />} />
-              <Route path="posts/edit/:id" element={<AdminEditor />} />
-              <Route path="ai-generator" element={<AdminAIGenerator />} />
-              <Route path="categories" element={<AdminCategories />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-          </Routes>
-          <Toaster position="top-right" />
-        </Router>
-      </TooltipProvider>
-    </HelmetProvider>
+export default function App() {
+  console.log("App Rendering...");
+  return (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <HelmetProvider>
+        <TooltipProvider>
+          <Router>
+            <AnalyticsTracker />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/blog" element={<BlogListing />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsConditions />} />
+              <Route path="/disclaimer" element={<Disclaimer />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/faq" element={<FAQPage />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="posts" element={<AdminPosts />} />
+                <Route path="posts/new" element={<AdminEditor />} />
+                <Route path="posts/edit/:id" element={<AdminEditor />} />
+                <Route path="ai-generator" element={<AdminAIGenerator />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+            </Routes>
+            <Toaster position="top-right" />
+          </Router>
+        </TooltipProvider>
+      </HelmetProvider>
+    </ThemeProvider>
   );
 }

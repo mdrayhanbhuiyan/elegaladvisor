@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { 
   Sparkles, Brain, Loader2, Download, Save, Image as ImageIcon, 
   Calendar, Search, Eye, Maximize2, Lightbulb, Zap, ArrowRight,
-  TrendingUp, Globe2, Clock
+  TrendingUp, Globe, Clock, Layers
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { db, auth } from '@/lib/firebase';
@@ -326,27 +326,48 @@ export default function AdminAIGenerator() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Auto-Blog Controller & Insights */}
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-primary/10 transition-colors">
+        <div>
+          <Badge className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-none px-4 py-1.5 rounded-full uppercase text-[10px] tracking-[0.3em] font-black mb-4 block w-fit">
+            AI Content Factory
+          </Badge>
+          <h1 className="text-4xl font-heading text-secondary dark:text-white leading-tight">Mastermind Generator</h1>
+          <p className="text-secondary/60 dark:text-muted-foreground text-xs font-bold uppercase tracking-widest mt-2 italic flex items-center gap-2">
+            <Sparkles className="w-3 h-3 text-indigo-600" /> Strategic SEO Content Construction Engine
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+           <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800 rounded-full">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-green-700 dark:text-green-400">Gemini LLM Online</span>
+           </div>
+        </div>
+      </div>
+
+      {/* Discovery & Auto-Blog Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="border-none shadow-md overflow-hidden dark:bg-slate-900 border-l-4 border-yellow-500">
-           <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-yellow-100 dark:bg-yellow-900/40 rounded-xl text-yellow-600">
+        <Card className="border border-primary/10 shadow-none rounded-[3rem] overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+           <CardHeader className="p-8 pb-4">
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl text-yellow-600">
                   <TrendingUp className="w-6 h-6" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">HIGH-CPC DISCOVERY</CardTitle>
-                  <CardDescription>Target high-value niches for USA & Canada</CardDescription>
+                  <CardTitle className="text-2xl font-heading dark:text-white">Topic Discovery</CardTitle>
+                  <CardDescription className="text-[10px] uppercase font-black tracking-widest opacity-50">High-CPC Market Intelligence</CardDescription>
                 </div>
               </div>
            </CardHeader>
-           <CardContent className="space-y-6">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex-grow min-w-[200px]">
-                   <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block">Niche Category</Label>
+           <CardContent className="p-8 pt-4 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                     <Layers className="w-3 h-3" /> Target Niche
+                   </Label>
                    <Select value={discoveryCategory} onValueChange={setDiscoveryCategory}>
-                     <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+                     <SelectTrigger className="h-12 bg-muted/30 border-primary/5 rounded-xl"><SelectValue /></SelectTrigger>
                      <SelectContent>
                        {PREDEFINED_CATEGORIES.map(cat => (
                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -354,10 +375,12 @@ export default function AdminAIGenerator() {
                      </SelectContent>
                    </Select>
                 </div>
-                <div className="w-48">
-                   <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block">Region</Label>
+                <div className="space-y-2">
+                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                     <Globe className="w-3 h-3" /> GEO Focus
+                   </Label>
                    <Select value={discoveryRegion} onValueChange={setDiscoveryRegion}>
-                     <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+                     <SelectTrigger className="h-12 bg-muted/30 border-primary/5 rounded-xl"><SelectValue /></SelectTrigger>
                      <SelectContent>
                        <SelectItem value="USA & Canada">USA & Canada</SelectItem>
                        <SelectItem value="United States">USA Only</SelectItem>
@@ -365,38 +388,39 @@ export default function AdminAIGenerator() {
                      </SelectContent>
                    </Select>
                 </div>
-                <Button 
-                  onClick={handleDiscoverTopics} 
-                  disabled={discovering}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold h-10 px-6 mt-auto"
-                >
-                  {discovering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lightbulb className="w-4 h-4 mr-2" />}
-                  Discover High-CPC
-                </Button>
               </div>
+              
+              <Button 
+                onClick={handleDiscoverTopics} 
+                disabled={discovering}
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-black h-12 rounded-xl transition-all shadow-lg shadow-yellow-100 dark:shadow-none uppercase tracking-widest text-xs"
+              >
+                {discovering ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lightbulb className="w-5 h-5 mr-3" />}
+                Initiate Market Research
+              </Button>
 
-              <div className="space-y-3 pt-4 border-t dark:border-slate-800">
+              <div className="pt-6 border-t border-primary/5">
                 <AnimatePresence mode="wait">
                   {discoveredTopics.length > 0 ? (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="space-y-2"
+                      className="space-y-3"
                     >
                       {discoveredTopics.map((t, i) => (
-                        <div key={i} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:border-yellow-500/50 transition-all">
+                        <div key={i} className="p-5 bg-muted/20 dark:bg-slate-800/50 rounded-2xl border border-primary/5 flex items-center justify-between group hover:border-yellow-500/30 transition-all">
                            <div className="flex-grow pr-4">
-                             <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{t.title}</h4>
+                             <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1 uppercase tracking-tight">{t.title}</h4>
                              <div className="flex items-center gap-4">
-                                <span className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">CPC: High Commercial Intent</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">KW: {t.focusKeyword}</span>
+                                <Badge variant="outline" className="text-[8px] font-black text-yellow-600 bg-yellow-50 border-none uppercase tracking-widest">High Commercial Intent</Badge>
+                                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">KW: {t.focusKeyword}</span>
                              </div>
                            </div>
                            <Button 
                             variant="ghost" 
-                            size="sm" 
+                            size="icon" 
                             onClick={() => useTopic(t.title)}
-                            className="shrink-0 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
+                            className="shrink-0 h-10 w-10 rounded-xl text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700 transition-colors"
                            >
                              <ArrowRight className="w-4 h-4" />
                            </Button>
@@ -404,9 +428,9 @@ export default function AdminAIGenerator() {
                       ))}
                     </motion.div>
                   ) : (
-                    <div className="h-48 flex flex-col items-center justify-center text-slate-400 border-2 border-dashed rounded-3xl">
-                       <Search className="w-8 h-8 mb-2 opacity-20" />
-                       <p className="text-xs font-medium italic">No trending topics discovered yet</p>
+                    <div className="h-48 flex flex-col items-center justify-center text-muted-foreground/30 border-2 border-dashed border-primary/5 rounded-[2rem]">
+                       <Search className="w-10 h-10 mb-4 opacity-20" />
+                       <p className="text-[10px] font-black uppercase tracking-[0.3em]">Zero Insights Detected</p>
                     </div>
                   )}
                 </AnimatePresence>
@@ -414,227 +438,229 @@ export default function AdminAIGenerator() {
            </CardContent>
         </Card>
 
-        <Card className="border-none shadow-md overflow-hidden dark:bg-slate-900 border-l-4 border-indigo-600">
-           <CardHeader>
+        {/* Auto Pilot Control */}
+        <Card className="border border-primary/10 shadow-none rounded-[3rem] overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+           <CardHeader className="p-8 pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl text-indigo-600">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl text-indigo-600">
                     <Zap className="w-6 h-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl">AUTO BLOG CYCLE</CardTitle>
-                    <CardDescription>Automated 5 posts/day for USA & Canada</CardDescription>
+                    <CardTitle className="text-2xl font-heading dark:text-white">Auto-Pilot Mode</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-black tracking-widest opacity-50">Continuous content flow</CardDescription>
                   </div>
                 </div>
-                <Badge variant={autoConfig?.isEnabled ? "default" : "secondary"} className={autoConfig?.isEnabled ? "bg-green-500" : ""}>
-                   {autoConfig?.isEnabled ? "ACTIVE" : "PAUSED"}
-                </Badge>
+                <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase ${
+                  autoConfig?.isEnabled ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"
+                }`}>
+                   {autoConfig?.isEnabled ? "System Armed" : "Ready to launch"}
+                </div>
               </div>
            </CardHeader>
-           <CardContent className="space-y-8">
+           <CardContent className="p-8 pt-4 space-y-8">
               <div className="grid grid-cols-2 gap-6">
-                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border flex flex-col items-center justify-center text-center">
-                    <Clock className="w-8 h-8 text-indigo-600 mb-2 opacity-40" />
-                    <span className="text-[10px] font-black uppercase text-slate-400 mb-1">Last Cycle Run</span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      {autoConfig?.lastRun ? new Date(autoConfig.lastRun).toLocaleDateString() : 'Never Run'}
+                 <div className="p-6 bg-muted/20 dark:bg-slate-800/50 rounded-[2rem] border border-primary/5 flex flex-col items-start">
+                    <Clock className="w-6 h-6 text-indigo-400 mb-4" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Temporal Sync</span>
+                    <span className="text-xs font-bold dark:text-white">
+                      {autoConfig?.lastRun ? `Last Run: ${new Date(autoConfig.lastRun).toLocaleDateString()}` : 'Never Executed'}
                     </span>
                  </div>
-                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border flex flex-col items-center justify-center text-center">
-                    <Globe2 className="w-8 h-8 text-indigo-600 mb-2 opacity-40" />
-                    <span className="text-[10px] font-black uppercase text-slate-400 mb-1">Target Traffic</span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">USA & CANADA PEAK</span>
+                 <div className="p-6 bg-muted/20 dark:bg-slate-800/50 rounded-[2rem] border border-primary/5 flex flex-col items-start">
+                    <Globe className="w-6 h-6 text-indigo-400 mb-4" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Active Reach</span>
+                    <span className="text-xs font-bold dark:text-white">USA & CANADA PEAK</span>
                  </div>
               </div>
 
-              <div className="space-y-4">
-                 <div className="flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/20">
+              <div className="space-y-6">
+                 <div className="flex items-center justify-between p-6 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/20">
                     <div className="flex flex-col">
-                       <span className="text-sm font-bold text-indigo-900 dark:text-indigo-400 uppercase tracking-tighter">Daily Auto-Generation</span>
-                       <span className="text-[10px] text-indigo-600 font-medium italic">Gemini constructs 5 strategic articles everyday</span>
+                       <span className="text-sm font-black uppercase tracking-tight text-indigo-900 dark:text-indigo-400">Autonomous Cycle</span>
+                       <span className="text-[10px] font-medium text-indigo-600/60 mt-1">Institutional-grade articles generated daily</span>
                     </div>
                     <Switch 
                       checked={autoConfig?.isEnabled || false} 
                       onCheckedChange={async (val) => {
                         await saveAutoBlogConfig({ isEnabled: val });
                         setAutoConfig(prev => prev ? { ...prev, isEnabled: val } : null);
-                        toast.success(`Auto Blog Generator ${val ? 'Enabled' : 'Disabled'}`);
+                        toast.success(`Auto-Pilot ${val ? 'Activated' : 'Deactivated'}`);
                       }}
+                      className="data-[state=checked]:bg-indigo-600"
                     />
                  </div>
 
                  <Button 
-                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-tight"
+                  className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-xl shadow-indigo-100 dark:shadow-none"
                   disabled={processingCycle || !autoConfig?.isEnabled}
                   onClick={handleRunAutoCycle}
                  >
                     {processingCycle ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Zap className="w-5 h-5 mr-3" />}
-                    Trigger Daily Cycle Manually
+                    Manual Cycle Override
                  </Button>
               </div>
            </CardContent>
         </Card>
       </div>
 
-      <Card className="border-none shadow-md overflow-hidden dark:bg-slate-900 border-l-4 border-indigo-600">
-        <CardHeader>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl text-indigo-600">
+      {/* Main Generator Interface */}
+      <Card className="border border-primary/10 shadow-none rounded-[3rem] overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+        <CardHeader className="p-8 pb-4">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl text-indigo-600">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <CardTitle className="text-xl">AI Mastermind Generator</CardTitle>
-              <CardDescription>Advanced SEO multi-post generator with custom Image AI</CardDescription>
+              <CardTitle className="text-2xl font-heading dark:text-white">Asset Generator</CardTitle>
+              <CardDescription className="text-[10px] uppercase font-black tracking-widest opacity-50">Construct bespoke SEO blog assets</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <CardContent className="p-8 pt-4 space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <div className="lg:col-span-2 space-y-2">
-              <Label htmlFor="topic" className="font-bold">Core Topic / Focus Keyword</Label>
+              <Label htmlFor="topic" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-2">
+                <Search className="w-3 h-3" /> Core Intent / Focus Keyword
+              </Label>
               <Input 
                 id="topic" 
-                placeholder="e.g. Best Student Loans for International Students in USA" 
+                placeholder="e.g. Strategic Loans for High-Growth Startups 2026..." 
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                className="h-12 text-lg"
+                className="h-14 text-lg bg-muted/20 border-primary/5 rounded-2xl focus:ring-indigo-600"
               />
             </div>
-            <div className="space-y-3">
-              <Label className="font-bold">Target Categories (Select Multiple)</Label>
-              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100">
+            <div className="space-y-4">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Layers className="w-3 h-3" /> Taxonomy Segments
+              </Label>
+              <div className="grid grid-cols-2 gap-3 p-5 bg-muted/20 dark:bg-slate-800 rounded-[2rem] border border-primary/5">
                 {PREDEFINED_CATEGORIES.map(cat => (
-                  <div key={cat} className="flex items-center space-x-2">
+                  <div key={cat} className="flex items-center space-x-3">
                     <Checkbox 
                       id={`cat-${cat}`} 
                       checked={targetCategories.includes(cat)} 
                       onCheckedChange={() => toggleCategory(cat)}
-                      className="data-[state=checked]:bg-indigo-600"
+                      className="rounded-md h-5 w-5 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
                     />
-                    <label htmlFor={`cat-${cat}`} className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">{cat}</label>
+                    <label htmlFor={`cat-${cat}`} className="text-[10px] font-black uppercase tracking-tight text-muted-foreground cursor-pointer group-hover:text-foreground">{cat}</label>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="space-y-2">
-              <Label htmlFor="numPosts" className="font-bold">Article Count (0-10)</Label>
+              <Label htmlFor="numPosts" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-2">
+                 Asset Volume
+              </Label>
               <Select value={numPosts} onValueChange={setNumPosts}>
-                <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-12 bg-muted/20 border-primary/5 rounded-2xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Array.from({ length: 11 }, (_, i) => i).map(n => (
                     <SelectItem key={n} value={n.toString()}>
-                      {n === 0 ? "0 Articles" : n === 1 ? "1 Massive Post" : `${n} Articles`}
+                      {n === 0 ? "0 Assets" : n === 1 ? "1 Strategic Post" : `${n} Strategic Assets`}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="country" className="font-bold">GEO Target</Label>
+              <Label htmlFor="country" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-2">
+                 GEO Target
+              </Label>
               <Select value={targetCountry} onValueChange={setTargetCountry}>
-                <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-12 bg-muted/20 border-primary/5 rounded-2xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USA">United States</SelectItem>
                   <SelectItem value="Canada">Canada</SelectItem>
-                  <SelectItem value="Both">Both (US & CA)</SelectItem>
+                  <SelectItem value="Both">Strategic Both (US & CA)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tone" className="font-bold">Writing Voice</Label>
+              <Label htmlFor="tone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-2">
+                 Linguistic Tone
+              </Label>
               <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-12 bg-muted/20 border-primary/5 rounded-2xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Professional">Professional</SelectItem>
-                  <SelectItem value="Helpful">Conversational</SelectItem>
-                  <SelectItem value="Expert">Legal Expert</SelectItem>
+                  <SelectItem value="Professional">Professional Authority</SelectItem>
+                  <SelectItem value="Helpful">Empathetic Advisor</SelectItem>
+                  <SelectItem value="Expert">Legal Strategist</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2 flex flex-col justify-end">
-               <div className="flex flex-col gap-2 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg border">
+               <div className="flex flex-col gap-3 p-5 bg-muted/20 dark:bg-slate-800 rounded-[2rem] border border-primary/5">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="seo-autopilot" className="text-[10px] font-black uppercase flex items-center gap-2 cursor-pointer text-indigo-600">
-                      <Search className="w-3 h-3" /> SEO Auto-Pilot
+                    <Label htmlFor="seo-autopilot" className="text-[9px] font-black uppercase tracking-widest cursor-pointer text-indigo-600 flex items-center gap-2">
+                      <Search className="w-3 h-3" /> SEO Intelligence
                     </Label>
-                    <Switch 
-                      id="seo-autopilot" 
-                      checked={seoAutoPilot} 
-                      onCheckedChange={setSeoAutoPilot} 
-                    />
+                    <Switch id="seo-autopilot" checked={seoAutoPilot} onCheckedChange={setSeoAutoPilot} className="data-[state=checked]:bg-indigo-600" />
                   </div>
-                  <div className="flex items-center justify-between border-t dark:border-slate-700 pt-2">
-                    <Label htmlFor="gen-images" className="text-[10px] font-black uppercase flex items-center gap-2 cursor-pointer text-slate-500">
-                      <ImageIcon className="w-3 h-3 text-indigo-600" /> Featured Image
+                  <div className="flex items-center justify-between border-t border-primary/5 pt-3">
+                    <Label htmlFor="gen-images" className="text-[9px] font-black uppercase tracking-widest cursor-pointer text-muted-foreground flex items-center gap-2">
+                      <ImageIcon className="w-3 h-3" /> AI Visuals
                     </Label>
-                    <Switch 
-                      id="gen-images" 
-                      checked={generateImages} 
-                      onCheckedChange={setGenerateImages} 
-                    />
-                  </div>
-                  <div className="flex items-center justify-between border-t dark:border-slate-700 pt-2">
-                    <Label htmlFor="gen-support-images" className="text-[10px] font-black uppercase flex items-center gap-2 cursor-pointer text-slate-500">
-                      <ImageIcon className="w-3 h-3" /> Content Images
-                    </Label>
-                    <Switch 
-                      id="gen-support-images" 
-                      checked={generateSupportingImages} 
-                      onCheckedChange={setGenerateSupportingImages} 
-                    />
+                    <Switch id="gen-images" checked={generateImages} onCheckedChange={setGenerateImages} className="data-[state=checked]:bg-indigo-600" />
                   </div>
                </div>
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-             <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex items-center gap-3">
+          <div className="p-8 bg-muted/20 dark:bg-slate-800/50 rounded-[2.5rem] border border-dashed border-primary/10">
+             <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex items-center gap-4">
                    <Switch 
                      id="schedule" 
                      checked={scheduleEnabled} 
                      onCheckedChange={setScheduleEnabled} 
+                     className="data-[state=checked]:bg-indigo-600"
                    />
-                   <Label htmlFor="schedule" className="font-bold flex items-center gap-2">
+                   <Label htmlFor="schedule" className="font-black uppercase tracking-widest text-[10px] flex items-center gap-2 cursor-pointer">
                      <Calendar className="w-4 h-4 text-indigo-600" />
-                     Smart Scheduling
+                     Temporal Scheduling
                    </Label>
                 </div>
                 {scheduleEnabled && (
-                  <div className="flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-                     <Label className="text-xs text-slate-500">Start Date:</Label>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex flex-wrap items-center gap-4"
+                  >
+                     <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Commencement:</Label>
                      <Input 
                        type="date" 
                        value={startDate} 
                        onChange={e => setStartDate(e.target.value)}
-                       className="w-40 h-9 text-xs"
+                       className="w-44 h-11 bg-white dark:bg-slate-900 border-primary/5 rounded-xl text-xs font-bold"
                      />
-                     <span className="text-[10px] text-slate-400 font-medium italic">
-                       Post will be scheduled 1 day apart.
+                     <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">
+                       / Iteration: 24h intervals
                      </span>
-                  </div>
+                  </motion.div>
                 )}
              </div>
           </div>
 
           <Button 
-            className="w-full h-14 text-xl font-black uppercase tracking-tighter bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none" 
+            className="w-full h-16 text-xs font-black uppercase tracking-[0.3em] bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl transition-all shadow-2xl shadow-indigo-100 dark:shadow-none" 
             onClick={handleGenerate}
             disabled={loading}
           >
             {loading ? (
               <>
-                <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                Constructing SEO Assets...
+                <Loader2 className="w-6 h-6 mr-4 animate-spin" />
+                Constructing Strategic Assets...
               </>
             ) : (
               <>
-                <Brain className="w-6 h-6 mr-3" />
-                Generate Strategic Content
+                <Brain className="w-6 h-6 mr-4" />
+                Initialize Asset Construction
               </>
             )}
           </Button>
@@ -642,61 +668,60 @@ export default function AdminAIGenerator() {
       </Card>
 
       {generatedPosts.length > 0 && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="flex items-center justify-between px-2">
+        <div className="space-y-8 animate-in fade-in slide-in-from-top-6 duration-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-4">
             <div>
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter flex items-center gap-2">
-                <Sparkles className="w-7 h-7 text-yellow-500" />
-                Output Gallery
+              <Badge className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 border-none px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-2">System Output</Badge>
+              <h2 className="text-3xl font-heading dark:text-white flex items-center gap-3">
+                <Sparkles className="w-8 h-8 text-yellow-500" />
+                Asset Gallery
               </h2>
-              <p className="text-sm text-slate-500">Review generated articles and AI-captured visuals</p>
             </div>
-            <Button variant="default" onClick={saveAll} className="bg-indigo-600 hover:bg-indigo-700 h-12 px-8 font-bold">
-              <Save className="w-4 h-4 mr-2" />
-              Upload All to Database
+            <Button onClick={saveAll} className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-12 px-10 rounded-2xl shadow-xl shadow-indigo-100 dark:shadow-none uppercase text-xs tracking-widest">
+              <Save className="w-4 h-4 mr-3" /> Commit All to Vault
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {generatedPosts.map((post, i) => (
-              <Card key={i} className="flex flex-col border-none shadow-xl hover:translate-y-[-8px] transition-all duration-300 dark:bg-slate-900 overflow-hidden group">
+              <Card key={i} className="flex flex-col border border-primary/5 shadow-none hover:bg-muted/5 transition-all duration-500 dark:bg-slate-900 rounded-[2.5rem] overflow-hidden group">
                 <div className="relative aspect-video overflow-hidden">
                    <img 
                      src={post.thumbnail} 
                      alt={post.title} 
-                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                     className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
                      referrerPolicy="no-referrer"
                    />
-                   <div className="absolute top-3 left-3 flex gap-2">
-                      <Badge className="bg-white/90 text-indigo-600 border-none font-bold backdrop-blur-sm uppercase text-[9px] tracking-widest">{post.category}</Badge>
-                      <Badge className="bg-indigo-600 text-white border-none font-bold shadow-lg uppercase text-[9px] tracking-widest">
-                        {post.status === 'scheduled' ? 'Scheduled' : 'Draft'}
+                   <div className="absolute top-4 left-4 flex gap-2">
+                      <Badge className="bg-white/90 dark:bg-slate-900/90 text-[8px] font-black uppercase tracking-widest text-indigo-600 border-none backdrop-blur-md px-3">{post.category}</Badge>
+                      <Badge className="bg-indigo-600 text-white border-none font-black text-[8px] uppercase tracking-widest px-3">
+                        {post.status === 'scheduled' ? 'Queued' : 'Staging'}
                       </Badge>
                    </div>
-                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                      <Button size="sm" variant="secondary" className="rounded-full font-bold" onClick={() => openPreview(post)}>
-                        <Eye className="w-4 h-4 mr-1.5" /> High-Res Preview
+                   <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                      <Button onClick={() => openPreview(post)} className="bg-white text-indigo-600 hover:bg-white/90 font-black rounded-full px-6 h-10 shadow-2xl uppercase text-[10px] tracking-widest">
+                        <Maximize2 className="w-4 h-4 mr-2" /> Inspect Asset
                       </Button>
                    </div>
                 </div>
-                <CardHeader className="flex-grow">
+                <CardHeader className="p-8 flex-grow">
                    {post.status === 'scheduled' && (
-                     <div className="flex items-center gap-1.5 text-[10px] text-indigo-600 font-bold mb-2">
+                     <div className="flex items-center gap-2 text-[9px] text-indigo-600 font-black uppercase tracking-widest mb-4">
                         <Calendar className="w-3 h-3" />
-                        Goes live: {new Date(post.publishDate).toLocaleDateString()}
+                        Live Logic: {new Date(post.publishDate).toLocaleDateString()}
                      </div>
                    )}
-                   <CardTitle className="text-lg leading-tight uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{post.title}</CardTitle>
-                   <CardDescription className="line-clamp-2 mt-2 text-xs">{post.meta_description}</CardDescription>
+                   <CardTitle className="text-xl font-heading leading-tight dark:text-white uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{post.title}</CardTitle>
+                   <CardDescription className="line-clamp-2 mt-4 text-[10px] font-medium leading-relaxed uppercase tracking-widest opacity-60">{post.meta_description}</CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0 pb-6 border-t border-slate-100 dark:border-slate-800 p-6 mt-auto">
-                   <div className="flex items-center justify-between">
+                <CardContent className="px-8 pb-8 pt-0 mt-auto">
+                   <div className="pt-6 border-t border-primary/5 flex items-center justify-between">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Focus KW</span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase italic tracking-tight">{post.focus_keyword}</span>
+                        <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-40">Core Semantic KW</span>
+                        <span className="text-[10px] font-black text-secondary dark:text-indigo-400 uppercase tracking-tight">{post.focus_keyword}</span>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => saveToDrafts(post)} className="text-indigo-600 hover:bg-indigo-50 font-bold">
-                        <Download className="w-4 h-4 mr-2" /> Save Content
+                      <Button variant="ghost" size="sm" onClick={() => saveToDrafts(post)} className="h-10 px-4 rounded-xl text-indigo-600 hover:bg-indigo-50 font-black uppercase text-[10px] tracking-widest">
+                        <Download className="w-4 h-4 mr-2" /> Archive
                       </Button>
                    </div>
                 </CardContent>

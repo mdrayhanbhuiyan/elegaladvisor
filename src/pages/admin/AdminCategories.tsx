@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -130,58 +131,68 @@ export default function AdminCategories() {
   );
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-primary/10 transition-colors">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Content Categories</h1>
-          <p className="text-gray-500 text-sm">Organize your financial and legal insights systematically</p>
+          <Badge className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-none px-4 py-1.5 rounded-full uppercase text-[10px] tracking-[0.3em] font-black mb-4 block w-fit">System Taxonomy</Badge>
+          <h1 className="text-4xl font-heading text-secondary dark:text-white leading-tight">Archive Segments</h1>
+          <p className="text-secondary/60 dark:text-muted-foreground text-xs font-bold uppercase tracking-widest mt-2 italic flex items-center gap-2">
+            <Layers className="w-3 h-3 text-indigo-600" /> Relational data organization for financial intelligence
+          </p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger render={<Button onClick={() => handleOpenDialog()} className="bg-indigo-600 hover:bg-indigo-700 font-bold h-12 px-6"><Plus className="w-4 h-4 mr-2" /> Add New Category</Button>}>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogTrigger render={<Button onClick={() => handleOpenDialog()} className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-14 px-10 rounded-2xl shadow-xl shadow-indigo-100 dark:shadow-none uppercase text-xs tracking-widest">
+              <Plus className="w-5 h-5 mr-3" /> Initialize Logic
+            </Button>} />
+          <DialogContent className="sm:max-w-[425px] rounded-[2rem]">
             <DialogHeader>
-              <DialogTitle>{editingCategory ? 'Edit Category' : 'Create New Category'}</DialogTitle>
-              <DialogDescription>
-                Categorize your content to help users find relevant financial guidance.
+              <DialogTitle className="text-2xl font-heading">Segment Protocol</DialogTitle>
+              <DialogDescription className="text-xs uppercase font-black tracking-widest opacity-50">
+                Define a new classification node for the intelligence matrix.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <form onSubmit={handleSubmit} className="space-y-6 py-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Category Name</Label>
+                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Node Label</Label>
                 <Input 
                   id="name" 
                   value={formData.name || ""} 
                   onChange={e => {
                     setFormData({...formData, name: e.target.value, slug: (e.target.value || '').toLowerCase().replace(/\s+/g, '-')});
                   }}
-                  placeholder="e.g. Personal Loans"
+                  placeholder="e.g. Personal Financial Strategy"
+                  className="h-12 bg-muted/20 border-primary/5 rounded-xl text-sm font-bold"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug (URL friendly)</Label>
-                <Input 
-                  id="slug" 
-                  value={formData.slug || ""} 
-                  onChange={e => setFormData({...formData, slug: e.target.value})}
-                  placeholder="e.g. personal-loans"
-                />
+                <Label htmlFor="slug" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Electronic Slug</Label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs">/</span>
+                  <Input 
+                    id="slug" 
+                    value={formData.slug || ""} 
+                    onChange={e => setFormData({...formData, slug: e.target.value})}
+                    placeholder="personal-strategy"
+                    className="h-12 pl-8 bg-muted/20 border-primary/10 rounded-xl text-xs font-mono font-bold"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
+                <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Functional Intent</Label>
                 <Textarea 
                   id="description" 
                   value={formData.description || ""} 
                   onChange={e => setFormData({...formData, description: e.target.value})}
-                  placeholder="Briefly describe what this category covers..."
-                  rows={3}
+                  placeholder="Define the strategic purpose of this node..."
+                  rows={4}
+                  className="bg-muted/20 border-primary/5 rounded-xl text-sm font-medium resize-none p-4"
                 />
               </div>
               <DialogFooter>
-                <Button type="submit" disabled={submitting} className="w-full bg-indigo-600">
-                  {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {editingCategory ? 'Update Category' : 'Create Category'}
+                <Button type="submit" disabled={submitting} className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg transition-all">
+                  {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5 mr-3" />}
+                  {editingCategory ? 'Commit Changes' : 'Finalize Logic Node'}
                 </Button>
               </DialogFooter>
             </form>
@@ -189,82 +200,99 @@ export default function AdminCategories() {
         </Dialog>
       </div>
 
-      <Card className="border-none shadow-xl dark:bg-slate-900 border-l-4 border-indigo-600">
-        <CardHeader className="pb-3 px-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-600">
-              <Layers className="w-5 h-5" />
+      <Card className="border border-slate-100 dark:border-slate-900 shadow-[0_15px_60px_-15px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-white dark:bg-slate-950 transition-all duration-500">
+        <CardHeader className="pb-8 p-10 bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-indigo-50 dark:bg-indigo-900/40 rounded-2xl text-indigo-600 shadow-inner">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-heading text-secondary dark:text-white leading-tight">Segment Console</CardTitle>
+                <CardDescription className="text-[10px] uppercase font-black tracking-widest opacity-50">Active Classification Matrix Nodes</CardDescription>
+              </div>
             </div>
-            <CardTitle className="text-lg">Management Console</CardTitle>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input 
-              placeholder="Search by name or slug..." 
-              className="pl-10 h-11"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+            <div className="relative w-full sm:w-80 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+              <Input 
+                placeholder="Filter matrix nodes..." 
+                className="h-12 pl-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl shadow-sm focus:ring-indigo-600 transition-all text-sm font-medium"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="px-6">
-          <div className="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-gray-500 uppercase text-[10px] font-black tracking-widest border-b dark:border-slate-800">
+              <thead className="bg-slate-50/30 dark:bg-slate-900/30 text-slate-400 uppercase text-[9px] font-black tracking-[0.2em] border-bottom border-slate-100 dark:border-slate-900">
                 <tr>
-                  <th className="px-6 py-4">Category Detail</th>
-                  <th className="px-6 py-4">Slug</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-10 py-5">Node Identity</th>
+                  <th className="px-10 py-5">Electronic Slug</th>
+                  <th className="px-10 py-5">Operational State</th>
+                  <th className="px-10 py-5 text-right pr-12">Operations</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-900">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-10 text-center">
-                      <Loader2 className="w-6 h-6 animate-spin mx-auto text-indigo-600" />
-                      <p className="mt-2 text-gray-500 font-medium">Syncing categories...</p>
+                    <td colSpan={4} className="px-10 py-40 text-center">
+                      <div className="flex flex-col items-center gap-6">
+                        <div className="w-12 h-12 border-t-2 border-indigo-600 rounded-full animate-spin"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 bg-slate-100 dark:bg-slate-900 px-6 py-2 rounded-full">Synchronizing Taxonomy...</span>
+                      </div>
                     </td>
                   </tr>
                 ) : filteredCategories.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-10 text-center text-gray-500">
-                      No categories found matching your search.
+                    <td colSpan={4} className="px-10 py-40 text-center">
+                       <div className="flex flex-col items-center gap-4 text-slate-300">
+                         <XCircle className="w-16 h-16 opacity-10" />
+                         <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">Zero archive nodes matching current filter.</p>
+                       </div>
                     </td>
                   </tr>
                 ) : (
                   filteredCategories.map((category) => (
-                    <tr key={category.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                      <td className="px-6 py-4">
+                    <tr key={category.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all duration-300 group">
+                      <td className="px-10 py-8">
                         <div className="flex flex-col">
-                          <span className="font-bold text-gray-900 dark:text-white uppercase tracking-tight">{category.name}</span>
-                          <span className="text-[10px] text-gray-400 line-clamp-1 max-w-[200px]">{category.description || 'No description provided'}</span>
+                          <span className="font-heading font-black text-secondary dark:text-white group-hover:text-indigo-600 transition-colors uppercase tracking-tight text-base leading-tight">{category.name}</span>
+                          <span className="text-[10px] text-slate-400 font-bold mt-2 line-clamp-1 max-w-[400px] uppercase tracking-wide opacity-80">{category.description || 'No descriptive logic defined'}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <code className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs text-indigo-600">{category.slug}</code>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-green-600 font-bold text-[10px]">
-                          <CheckCircle2 className="w-3 h-3" /> ACTIVE
+                      <td className="px-10 py-8">
+                        <div className="flex items-center gap-2">
+                           <span className="text-[9px] text-slate-400 font-mono">/</span>
+                           <code className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-widest uppercase">{category.slug}</code>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="w-4 h-4" /></Button>}>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleOpenDialog(category)}>
-                              <Edit2 className="w-4 h-4 mr-2" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleDelete(category.id)}
-                              className="text-red-600 focus:text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                      <td className="px-10 py-8">
+                        <div className="flex items-center gap-2.5 bg-green-50/50 dark:bg-green-900/10 text-green-600 px-4 py-1.5 rounded-full w-fit">
+                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="font-black text-[9px] tracking-[0.2em] uppercase">Tactical Active</span>
+                        </div>
+                      </td>
+                      <td className="px-10 py-8 text-right pr-12">
+                        <div className="flex justify-end gap-3 opacity-40 group-hover:opacity-100 transition-all duration-300">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleOpenDialog(category)} 
+                            className="h-10 w-10 rounded-xl hover:bg-white dark:hover:bg-slate-800 hover:text-indigo-600 hover:shadow-xl transition-all"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDelete(category.id)}
+                            className="h-10 w-10 rounded-xl text-red-400 hover:text-red-600 hover:bg-white dark:hover:bg-slate-800 transition-all"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
