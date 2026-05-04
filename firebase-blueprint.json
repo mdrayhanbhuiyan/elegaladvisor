@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "Post": {
+      "title": "Blog Post",
+      "description": "A blog article on legal or financial advice.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "string", "description": "Markdown content" },
+        "contentHtml": { "type": "string", "description": "Rendered HTML content" },
+        "category": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "thumbnail": { "type": "string" },
+        "featuredImage": { "type": "string" },
+        "metaTitle": { "type": "string" },
+        "metaDescription": { "type": "string" },
+        "focusKeyword": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published", "scheduled"] },
+        "publishDate": { "type": "string", "format": "date-time" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "faq": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "content", "category", "status", "authorId"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Blog categories like Loan, Insurance etc.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "Settings": {
+      "title": "Site Settings",
+      "description": "Site-wide configuration.",
+      "type": "object",
+      "properties": {
+        "siteTitle": { "type": "string" },
+        "adSenseCode": { "type": "string" },
+        "disclaimer": { "type": "string" },
+        "logo": { "type": "string" }
+      }
+    },
+    "Comment": {
+      "title": "Blog Comment",
+      "description": "Feedback or questions left by users on blog posts.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhoto": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "postId": { "type": "string" },
+        "isApproved": { "type": "boolean" }
+      },
+      "required": ["text", "authorId", "authorName", "postId", "createdAt"]
+    },
+    "AutoBlogConfig": {
+      "title": "Auto Blog Config",
+      "description": "Settings for the automatic blog generator.",
+      "type": "object",
+      "properties": {
+        "isEnabled": { "type": "boolean" },
+        "lastRun": { "type": "string", "format": "date-time" },
+        "generationCountPerDay": { "type": "integer", "default": 5 },
+        "targetRegion": { "type": "string", "default": "USA & Canada" },
+        "categories": { "type": "array", "items": { "type": "string" } },
+        "publishDirectly": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "firestore": {
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Collection of blog posts"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Sub-collection of comments for a specific post"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Collection of categories"
+    },
+    "/settings/config": {
+      "schema": "Settings",
+      "description": "Site configuration document"
+    },
+    "/settings/autoblog": {
+      "schema": "AutoBlogConfig",
+      "description": "Automatic blog generator configuration"
+    },
+    "/admins/{adminId}": {
+      "schema": "object",
+      "description": "List of authorized admin UIDs"
+    }
+  }
+}
