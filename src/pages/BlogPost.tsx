@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, User, Clock, Share2, Facebook, Twitter, Linkedin, ArrowLeft, Bookmark, ChevronLeft, ChevronRight, Maximize2, Newspaper } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { getRelatedPostsByAI } from '@/services/seoService';
 import { stripHtml } from '@/lib/utils';
@@ -202,7 +202,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{post.metaTitle || post.title} | The Legal Daily</title>
+        <title>{post.metaTitle || post.title} | E-Legal Advisor</title>
         <meta name="description" content={post.metaDescription} />
         {post.metaKeywords && <meta name="keywords" content={post.metaKeywords} />}
         
@@ -235,7 +235,7 @@ export default function BlogPost() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 py-6 border-y-2 border-primary my-10">
                 <div className="flex items-center gap-4">
                    <div className="text-sm">
-                      <p className="font-black text-primary uppercase tracking-widest text-[11px]">Dispatch By {post.authorName || 'Legal Daily Staff'}</p>
+                      <p className="font-black text-primary uppercase tracking-widest text-[11px]">Dispatch By {post.authorName || 'E-Legal Staff'}</p>
                       <p className="text-muted-foreground font-serif italic text-xs">Specialized intelligence report for North America</p>
                    </div>
                 </div>

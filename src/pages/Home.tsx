@@ -7,7 +7,7 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Landmark, CreditCard, GraduationCap, Plane, Activity, ArrowRight, Layers, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { stripHtml } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -96,7 +96,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-10">
         <div className="w-16 h-16 border-t-2 border-primary animate-spin mb-8"></div>
-        <h1 className="text-2xl font-nameplate text-primary animate-pulse">THE LEGAL DAILY</h1>
+        <h1 className="text-2xl font-nameplate text-primary animate-pulse uppercase">E-LEGAL ADVISOR</h1>
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-4 italic">Synchronizing Global Intelligence...</p>
       </div>
     );
@@ -107,20 +107,6 @@ export default function Home() {
       <Navbar />
       
       <main className="max-w-7xl mx-auto pt-10 px-4 sm:px-6 lg:px-8 pb-20">
-        {/* Newspaper Top Info Bar */}
-        <div className="border-y-2 border-primary py-2 mb-10 flex flex-col md:flex-row items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] italic">
-          <div className="flex items-center gap-6 mb-2 md:mb-0">
-            <span>Special Report</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
-            <span>Vol. LXIV — No. 312</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <span>Global Finance & Jurisprudence</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
-            <span className="text-primary tracking-[0.4em]">USA & CANADA EDITION</span>
-          </div>
-        </div>
-
         {/* Hero Section - Multi-column Layout */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-primary/20 mb-16 pb-16">
           {/* Main Headline Column */}
@@ -160,7 +146,7 @@ export default function Home() {
               </motion.div>
             ) : (
               <div className="py-20 text-center border-2 border-dashed border-primary/10">
-                 <h2 className="text-4xl font-nameplate text-primary/20">The Daily Record</h2>
+                 <h2 className="text-4xl font-nameplate text-primary/20 uppercase">E-Legal Advisor Record</h2>
                  <p className="text-sm font-serif italic text-muted-foreground mt-4">Waiting for latest intelligence dispatches...</p>
               </div>
             )}

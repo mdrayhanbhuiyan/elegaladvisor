@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Rocket, FileText, Settings, Sparkles, BarChart3, Layers, LogOut, Moon, Sun, Globe } from 'lucide-react';
 import { auth } from '@/lib/firebase';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -46,8 +46,8 @@ export default function AdminLayout() {
             <Rocket className="text-white w-6 h-6 group-hover:animate-bounce" />
           </div>
           <div className="flex flex-col">
-            <span className="font-heading font-black text-secondary dark:text-white uppercase tracking-tight text-xl leading-none">The Legal</span>
-            <span className="font-heading font-black text-indigo-600 uppercase tracking-widest text-[10px] mt-1 italic">Intelligence Bureau</span>
+            <span className="font-heading font-black text-secondary dark:text-white uppercase tracking-tight text-xl leading-none">E-Legal</span>
+            <span className="font-heading font-black text-indigo-600 uppercase tracking-widest text-[10px] mt-1 italic">Advisor Portfolio</span>
           </div>
         </div>
         

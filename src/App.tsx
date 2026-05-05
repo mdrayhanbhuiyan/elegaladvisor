@@ -31,7 +31,11 @@ import AnalyticsTracker from './components/analytics/AnalyticsTracker';
 import { ThemeProvider } from 'next-themes';
 
 export default function App() {
-  console.log("App Rendering...");
+  React.useEffect(() => {
+    console.log("App Component Mounted Successfully");
+    document.body.getAttribute('data-app-status') || document.body.setAttribute('data-app-status', 'ready');
+  }, []);
+
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <HelmetProvider>

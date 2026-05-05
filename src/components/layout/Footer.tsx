@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-20">
           <div className="md:col-span-5 space-y-8">
             <div className="flex flex-col items-start gap-4">
-               <h2 className="text-3xl font-nameplate text-background tracking-tight">THE LEGAL DAILY</h2>
+               <h2 className="text-3xl font-nameplate text-background tracking-tight uppercase">E-LEGAL <span className="italic">ADVISOR</span></h2>
                <div className="h-px bg-background/20 w-32"></div>
             </div>
             <p className="text-sm font-serif italic text-background/60 leading-relaxed max-w-sm text-left">
@@ -72,10 +72,10 @@ export default function Footer() {
         <div className="pt-12 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-center md:text-left space-y-4">
             <p className="text-[10px] text-background/30 max-w-2xl uppercase tracking-widest leading-relaxed font-black mb-4">
-               The Legal Daily is a digital-first publication serving the financial and judicial interests of professional agencies in the USA and Canada.
+               E-Legal Advisor is a digital-first publication serving the financial and judicial interests of professional agencies in the USA and Canada.
             </p>
             <div className="flex items-center justify-center md:justify-start gap-4 text-[9px] font-black uppercase tracking-widest opacity-40">
-               <span>© {new Date().getFullYear()} The Legal Daily</span>
+               <span>© {new Date().getFullYear()} E-Legal Advisor</span>
                <div className="w-1 h-1 bg-background/20 rounded-full"></div>
                <span>Institutional Edition v4.0</span>
             </div>

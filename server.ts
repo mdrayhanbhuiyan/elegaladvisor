@@ -178,19 +178,32 @@ async function startServer() {
     res.send(xml);
   });
 
+  console.log(`Server environment: ${process.env.NODE_ENV || 'development'}`);
+  
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
+    console.log("Vite development middleware active.");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("Serving static files from dist.");
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    if (fs.existsSync(distPath)) {
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    } else {
+      console.warn("Dist folder missing! Falling back to Vite middleware.");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    }
   }
 
   startScheduler();

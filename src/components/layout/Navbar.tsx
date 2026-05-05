@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Search, User, Newspaper } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 const CATEGORIES = [
   { name: 'Latest', href: '/' },
@@ -50,7 +50,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           <Link to="/" className="group inline-block">
             <h1 className="text-4xl md:text-7xl lg:text-8xl font-nameplate text-primary leading-none transition-transform group-hover:scale-[1.02] duration-500">
-               THE LEGAL <span className="italic">DAILY</span>
+               E-LEGAL <span className="italic">ADVISOR</span>
             </h1>
           </Link>
           <div className="mt-4 flex items-center justify-center gap-4 w-full max-w-2xl">
