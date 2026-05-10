@@ -61,6 +61,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /subscribers/{subscriberId} {
+      allow create: if request.resource.data.email is string && 
+                      request.resource.data.email.size() <= 256 &&
+                      request.resource.data.email.matches('^[^@]+@[^@]+\\.[^@]+$');
+      allow read, list, update, delete: if isAdmin();
+    }
+
     match /settings/{settingId} {
       allow read: if true;
       allow write: if isAdmin();

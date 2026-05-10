@@ -6,9 +6,12 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Landmark, CreditCard, GraduationCap, Plane, Activity, ArrowRight, Layers, User } from 'lucide-react';
+import { TrendingUp, Landmark, CreditCard, GraduationCap, Plane, Activity, ArrowRight, Layers, User, Send, Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { stripHtml } from '@/lib/utils';
+import { addDoc, serverTimestamp } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/firestore-errors';
+import { toast } from 'sonner';
 
 const CATEGORIES = [
   { name: 'Personal Loans', slug: 'personal-loans', icon: Landmark, color: 'bg-primary/10 text-primary' },
@@ -24,6 +27,34 @@ export default function Home() {
   const [loanPosts, setLoanPosts] = useState<any[]>([]);
   const [scholarshipPosts, setScholarshipPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    const path = 'subscribers';
+    try {
+      await addDoc(collection(db, path), {
+        email: email.trim().toLowerCase(),
+        createdAt: serverTimestamp(),
+        source: 'home_section'
+      });
+      setIsSubscribed(true);
+      setEmail('');
+      toast.success('Strategy session confirmed. Welcome.');
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('permission-denied')) {
+        handleFirestoreError(error, OperationType.CREATE, path);
+      }
+      toast.error('Strategic enrollment error.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -286,6 +317,51 @@ export default function Home() {
              </div>
           </div>
         </div>
+
+        {/* Subscription Section */}
+        <section className="mt-24 py-20 px-8 bg-primary text-background border-4 border-double border-background ring-1 ring-primary overflow-hidden relative">
+           <div className="absolute top-0 right-0 p-4 opacity-5">
+              <Layers className="w-64 h-64 -mr-32 -mt-32" />
+           </div>
+           
+           <div className="max-w-3xl mx-auto text-center relative z-10">
+              <h2 className="text-4xl md:text-5xl font-heading mb-6 tracking-tight">The Intelligence Network</h2>
+              <p className="text-lg font-serif italic opacity-70 mb-10 leading-relaxed text-center">
+                 "Join 45,000+ legal professionals receiving our weekly analysis of shifting financial mandates and judicial precedents across North America."
+              </p>
+              
+              {isSubscribed ? (
+                <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+                   <div className="w-16 h-16 border-2 border-background flex items-center justify-center rounded-full">
+                      <Check className="w-8 h-8" />
+                   </div>
+                   <span className="text-xl font-black uppercase tracking-[0.2em]">Deployment Confirmed</span>
+                   <p className="text-sm font-serif opacity-60">Your credentials have been added to our strategic mailing registry.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-4">
+                  <input 
+                    type="email" 
+                    placeholder="Credential (Email Address)" 
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-transparent border-2 border-background/20 p-5 font-serif italic text-lg focus:outline-none focus:border-background transition-all placeholder:text-background/30"
+                  />
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-background text-primary hover:bg-background/90 px-10 py-8 rounded-none font-black uppercase tracking-[0.2em] text-xs h-auto disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Syncing...' : 'Request Access'}
+                  </Button>
+                </form>
+              )}
+              <p className="mt-8 text-[9px] font-black uppercase tracking-widest opacity-30 italic">
+                 Restricted distribution. Subject to the Advisor's ethical charter and privacy protocols.
+              </p>
+           </div>
+        </section>
 
         {/* Global News Cloud */}
         <section className="mt-24 pt-12 border-t-2 border-black">

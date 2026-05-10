@@ -159,6 +159,59 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Public API: Get Published Posts
+  app.get("/api/posts", async (req, res) => {
+    try {
+      if (!db && !clientDb) throw new Error("Database not initialized");
+      
+      let posts: any[] = [];
+      
+      if (adminAvailable && db) {
+        const snapshot = await db.collection("posts")
+          .where("status", "==", "published")
+          .orderBy("publishDate", "desc")
+          .limit(20)
+          .get();
+        posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } else if (clientDb) {
+        const q = clientQuery(
+          clientCollection(clientDb, "posts"), 
+          clientWhere("status", "==", "published")
+        );
+        const snapshot = await getDocs(q);
+        posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Manual sort if client SDK
+        posts.sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
+        posts = posts.slice(0, 20);
+      }
+
+      res.json({ success: true, count: posts.length, posts });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Public API: Get Categories
+  app.get("/api/categories", async (req, res) => {
+    try {
+      if (!db && !clientDb) throw new Error("Database not initialized");
+      
+      let categories: any[] = [];
+      
+      if (adminAvailable && db) {
+        const snapshot = await db.collection("categories").get();
+        categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } else if (clientDb) {
+        const snapshot = await getDocs(clientCollection(clientDb, "categories"));
+        categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      }
+
+      res.json({ success: true, categories });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // robots.txt
   app.get("/robots.txt", (req, res) => {
     res.type("text/plain");

@@ -75,6 +75,17 @@
         "categories": { "type": "array", "items": { "type": "string" } },
         "publishDirectly": { "type": "boolean", "default": true }
       }
+    },
+    "Subscriber": {
+      "title": "Newsletter Subscriber",
+      "description": "User email address for newsletter updates.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "source": { "type": "string", "description": "Where the user signed up from (e.g., footer)" }
+      },
+      "required": ["email", "createdAt"]
     }
   },
   "firestore": {
@@ -89,6 +100,10 @@
     "/categories/{categoryId}": {
       "schema": "Category",
       "description": "Collection of categories"
+    },
+    "/subscribers/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Collection of newsletter subscribers"
     },
     "/settings/config": {
       "schema": "Settings",
